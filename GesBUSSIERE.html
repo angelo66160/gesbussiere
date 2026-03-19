@@ -1,0 +1,1938 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1565C0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GesBUSSIERE">
+<title>GesBUSSIERE</title>
+<style>
+  :root {
+    --blue-primary: #1565C0;
+    --blue-dark: #0D47A1;
+    --blue-light: #1976D2;
+    --blue-soft: #E3F2FD;
+    --blue-mid: #BBDEFB;
+    --white: #FFFFFF;
+    --gray-50: #FAFAFA;
+    --gray-100: #F5F5F5;
+    --gray-200: #EEEEEE;
+    --gray-300: #E0E0E0;
+    --gray-400: #BDBDBD;
+    --gray-500: #9E9E9E;
+    --gray-600: #757575;
+    --gray-700: #616161;
+    --gray-800: #424242;
+    --gray-900: #212121;
+    --red: #D32F2F;
+    --red-light: #FFEBEE;
+    --orange: #E65100;
+    --orange-light: #FFF3E0;
+    --green: #2E7D32;
+    --green-light: #E8F5E9;
+    --yellow: #F57F17;
+    --yellow-light: #FFFDE7;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+    --shadow-md: 0 2px 8px rgba(0,0,0,0.12);
+    --shadow-lg: 0 4px 20px rgba(0,0,0,0.15);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--gray-100); color: var(--gray-900); min-height: 100vh; overflow-x: hidden; }
+
+  /* APP SHELL */
+  #app { display: flex; flex-direction: column; min-height: 100vh; max-width: 480px; margin: 0 auto; background: var(--white); position: relative; box-shadow: var(--shadow-lg); }
+
+  /* HEADER */
+  .header { background: var(--blue-primary); color: white; padding: 16px 20px 12px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+  .header-title { font-size: 20px; font-weight: 700; letter-spacing: 0.5px; }
+  .header-sub { font-size: 11px; opacity: 0.75; margin-top: 1px; }
+  .header-badge { background: rgba(255,255,255,0.2); border-radius: 20px; padding: 4px 10px; font-size: 12px; font-weight: 600; }
+
+  /* NAV 2 LIGNES */
+  .nav-grid { background: var(--blue-dark); position: sticky; top: 60px; z-index: 99; }
+  .nav-row { display: flex; border-bottom: 1px solid rgba(255,255,255,0.08); }
+  .nav-row:last-child { border-bottom: none; }
+  .nav-btn { flex: 1; padding: 8px 4px; color: rgba(255,255,255,0.6); font-size: 11px; font-weight: 500; border: none; background: none; cursor: pointer; white-space: nowrap; display: flex; flex-direction: column; align-items: center; gap: 2px; transition: all 0.2s; min-width: 0; }
+  .nav-btn.active { color: white; background: rgba(255,255,255,0.12); }
+  .nav-icon { font-size: 15px; }
+
+  /* CONTENT */
+  .content { flex: 1; padding: 16px; padding-bottom: 80px; overflow-y: auto; }
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* SECTION HEADER */
+  .section-hdr { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .section-title { font-size: 17px; font-weight: 700; color: var(--gray-900); }
+  .btn-add { background: var(--blue-primary); color: white; border: none; border-radius: var(--radius-sm); padding: 8px 14px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+
+  /* CARDS */
+  .card { background: var(--white); border-radius: var(--radius-md); border: 1px solid var(--gray-200); padding: 14px 16px; margin-bottom: 10px; box-shadow: var(--shadow-sm); }
+  .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+  .card-title { font-size: 15px; font-weight: 700; color: var(--gray-900); }
+  .card-sub { font-size: 12px; color: var(--gray-500); margin-top: 2px; }
+  .card-row { display: flex; justify-content: space-between; font-size: 13px; padding: 3px 0; border-bottom: 1px solid var(--gray-100); }
+  .card-row:last-child { border-bottom: none; }
+  .card-label { color: var(--gray-600); }
+  .card-value { font-weight: 500; color: var(--gray-900); }
+
+  /* BADGES */
+  .badge { display: inline-block; padding: 3px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+  .badge-ok { background: var(--green-light); color: var(--green); }
+  .badge-warn { background: var(--yellow-light); color: var(--yellow); }
+  .badge-danger { background: var(--red-light); color: var(--red); }
+  .badge-info { background: var(--blue-soft); color: var(--blue-primary); }
+  .badge-orange { background: var(--orange-light); color: var(--orange); }
+
+  /* STAT CARDS */
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  .stat-card { background: var(--white); border-radius: var(--radius-md); border: 1px solid var(--gray-200); padding: 14px; text-align: center; box-shadow: var(--shadow-sm); }
+  .stat-num { font-size: 28px; font-weight: 700; color: var(--blue-primary); }
+  .stat-label { font-size: 12px; color: var(--gray-500); margin-top: 2px; }
+
+  /* ALERTS */
+  .alert { border-radius: var(--radius-md); padding: 12px 14px; margin-bottom: 10px; display: flex; align-items: flex-start; gap: 10px; }
+  .alert-danger { background: var(--red-light); border-left: 3px solid var(--red); }
+  .alert-warn { background: var(--yellow-light); border-left: 3px solid var(--yellow); }
+  .alert-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .alert-text { font-size: 13px; font-weight: 500; color: var(--gray-800); }
+  .alert-sub { font-size: 11px; color: var(--gray-600); margin-top: 3px; }
+
+  /* MODAL */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; align-items: flex-end; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--white); border-radius: var(--radius-lg) var(--radius-lg) 0 0; padding: 20px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; animation: slideUp 0.3s ease; }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  .modal-title { font-size: 17px; font-weight: 700; margin-bottom: 16px; color: var(--gray-900); }
+  .modal-close { float: right; background: none; border: none; font-size: 22px; color: var(--gray-500); cursor: pointer; line-height: 1; }
+
+  /* FORMS */
+  .form-group { margin-bottom: 14px; }
+  .form-label { font-size: 12px; font-weight: 600; color: var(--gray-600); margin-bottom: 5px; display: block; text-transform: uppercase; letter-spacing: 0.4px; }
+  .form-input, .form-select { width: 100%; padding: 10px 12px; border: 1.5px solid var(--gray-300); border-radius: var(--radius-sm); font-size: 14px; color: var(--gray-900); background: var(--white); outline: none; transition: border-color 0.2s; }
+  .form-input:focus, .form-select:focus { border-color: var(--blue-primary); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .btn-primary { width: 100%; background: var(--blue-primary); color: white; border: none; border-radius: var(--radius-sm); padding: 13px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 8px; }
+  .btn-secondary { background: var(--gray-100); color: var(--gray-700); border: 1px solid var(--gray-300); border-radius: var(--radius-sm); padding: 10px 16px; font-size: 14px; font-weight: 500; cursor: pointer; }
+
+  /* SEARCH */
+  .search-bar { background: var(--gray-100); border-radius: var(--radius-md); padding: 10px 14px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .search-input { background: none; border: none; outline: none; font-size: 14px; width: 100%; color: var(--gray-900); }
+
+  /* TABS */
+  .tabs { display: flex; gap: 8px; margin-bottom: 14px; overflow-x: auto; scrollbar-width: none; }
+  .tab { flex: 0 0 auto; padding: 7px 14px; border-radius: 20px; font-size: 13px; font-weight: 500; border: 1.5px solid var(--gray-300); background: var(--white); color: var(--gray-600); cursor: pointer; }
+  .tab.active { background: var(--blue-primary); border-color: var(--blue-primary); color: white; }
+
+  /* FAB */
+  .fab { position: fixed; bottom: 24px; right: 20px; width: 52px; height: 52px; background: var(--blue-primary); border-radius: 50%; border: none; color: white; font-size: 24px; box-shadow: var(--shadow-lg); cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 150; }
+
+  /* DIVIDER */
+  .divider { height: 1px; background: var(--gray-200); margin: 12px 0; }
+
+  /* DASHBOARD */
+  .dash-welcome { background: linear-gradient(135deg, var(--blue-primary), var(--blue-dark)); color: white; border-radius: var(--radius-lg); padding: 20px; margin-bottom: 16px; }
+  .dash-welcome h2 { font-size: 20px; font-weight: 700; }
+  .dash-welcome p { font-size: 13px; opacity: 0.8; margin-top: 4px; }
+
+  /* PROGRESS BAR */
+  .progress-bar { height: 6px; background: var(--gray-200); border-radius: 3px; overflow: hidden; margin-top: 6px; }
+  .progress-fill { height: 100%; border-radius: 3px; transition: width 0.3s; }
+
+  /* EMPTY STATE */
+  .empty { text-align: center; padding: 40px 20px; color: var(--gray-400); }
+  .empty-icon { font-size: 40px; margin-bottom: 12px; }
+  .empty-text { font-size: 14px; }
+
+  /* DELETE BTN */
+  .btn-del { background: none; border: none; color: var(--gray-400); font-size: 18px; cursor: pointer; padding: 4px; }
+  .btn-edit { background: none; border: none; color: var(--blue-light); font-size: 16px; cursor: pointer; padding: 4px; }
+
+  /* TOAST */
+  #toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--gray-900); color: white; padding: 10px 20px; border-radius: var(--radius-md); font-size: 13px; z-index: 300; opacity: 0; transition: all 0.3s; pointer-events: none; white-space: nowrap; }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* LOGIN */
+  #login-screen { position: fixed; inset: 0; background: var(--blue-primary); z-index: 500; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px; }
+  .login-logo { font-size: 36px; font-weight: 800; color: white; letter-spacing: 1px; margin-bottom: 6px; }
+  .login-sub { color: rgba(255,255,255,0.7); font-size: 13px; margin-bottom: 40px; }
+  .login-card { background: white; border-radius: var(--radius-lg); padding: 28px; width: 100%; max-width: 360px; }
+  .login-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 20px; color: var(--gray-900); }
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen">
+  <div class="login-logo">GesBUSSIERE</div>
+  <div class="login-sub">Gestion de flotte ambulancière</div>
+  <div class="login-card">
+    <h3>Connexion</h3>
+    <div class="form-group">
+      <label class="form-label">Nom d'utilisateur</label>
+      <input class="form-input" id="login-user" type="text" placeholder="Votre identifiant">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Mot de passe</label>
+      <input class="form-input" id="login-pass" type="password" placeholder="••••••••">
+    </div>
+    <button class="btn-primary" onclick="doLogin()">Se connecter</button>
+    <p style="font-size:11px;color:var(--gray-400);text-align:center;margin-top:12px;">Contactez l'administrateur pour votre mot de passe</p>
+  </div>
+</div>
+
+<div id="app">
+  <!-- HEADER -->
+  <div class="header">
+    <div>
+      <div class="header-title">GesBUSSIERE</div>
+      <div class="header-sub" id="header-date"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+      <div class="header-badge" id="alert-count">0 alertes</div>
+      <div id="role-badge" style="font-size:10px;color:rgba(255,255,255,0.7);display:none"></div>
+    </div>
+  </div>
+
+  <!-- NAV 2 lignes -->
+  <nav class="nav-grid">
+    <div class="nav-row">
+      <button class="nav-btn active" onclick="showPage('dashboard', this)"><span class="nav-icon">🏠</span>Accueil</button>
+      <button class="nav-btn" onclick="showPage('flotte', this)"><span class="nav-icon">🚑</span>Flotte</button>
+      <button class="nav-btn" onclick="showPage('carburant', this)"><span class="nav-icon">⛽</span>Carburant</button>
+      <button class="nav-btn" onclick="showPage('maintenance', this)"><span class="nav-icon">🔧</span>Maintenance</button>
+      <button class="nav-btn" onclick="showPage('personnel', this)"><span class="nav-icon">👤</span>Personnel</button>
+    </div>
+    <div class="nav-row">
+      <button class="nav-btn" onclick="showPage('arsA', this)"><span class="nav-icon">💊</span>ARS-A</button>
+      <button class="nav-btn" onclick="showPage('arsB', this)"><span class="nav-icon">🏥</span>ARS-B</button>
+      <button class="nav-btn" onclick="showPage('missions', this)"><span class="nav-icon">📋</span>Missions</button>
+      <button class="nav-btn" onclick="showPage('messagerie', this)" id="nav-messages" style="position:relative">
+        <span class="nav-icon">💬</span>Messages
+        <span id="msg-badge" style="display:none;position:absolute;top:4px;right:8px;background:#D32F2F;color:white;border-radius:50%;width:16px;height:16px;font-size:10px;font-weight:700;line-height:16px;text-align:center"></span>
+      </button>
+      <button class="nav-btn" onclick="showPage('entretiens', this)"><span class="nav-icon">🧼</span>Entretiens</button>
+    </div>
+  </nav>
+
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="dash-welcome">
+        <h2>Bonjour 👋</h2>
+        <p id="dash-user">Gestionnaire — GesBUSSIERE</p>
+      </div>
+      <div class="stats-grid" id="dash-stats"></div>
+      <div class="section-title" style="margin-bottom:10px;">⚠️ Alertes actives</div>
+      <div id="dash-alerts"></div>
+    </div>
+
+    <!-- FLOTTE -->
+    <div class="page" id="page-flotte">
+      <div class="section-hdr">
+        <div class="section-title">🚑 Flotte</div>
+        <button class="btn-add admin-only" onclick="openModal('modal-vehicule')">+ Ajouter</button>
+      </div>
+      <div class="search-bar">
+        <span>🔍</span>
+        <input class="search-input" placeholder="Rechercher un véhicule..." oninput="filterList('vehicules', this.value, 'list-vehicules')">
+      </div>
+      <div id="list-vehicules"></div>
+    </div>
+
+    <!-- CARBURANT -->
+    <div class="page" id="page-carburant">
+      <div class="section-hdr">
+        <div class="section-title">⛽ Carburant</div>
+        <button class="btn-add" onclick="openModal('modal-carburant')">+ Ajouter</button>
+      </div>
+      <div class="tabs">
+        <button class="tab active" onclick="filterCarburant('tous', this)">Tous</button>
+        <button class="tab" onclick="filterCarburant('vehicule', this)">Par véhicule</button>
+      </div>
+      <div id="list-carburant"></div>
+    </div>
+
+    <!-- MAINTENANCE -->
+    <div class="page" id="page-maintenance">
+      <div class="section-hdr">
+        <div class="section-title">🔧 Maintenance</div>
+        <button class="btn-add" onclick="openModal('modal-maintenance')">+ Ajouter</button>
+      </div>
+      <div class="tabs">
+        <button class="tab active" onclick="filterMaint('tous', this)">Tous</button>
+        <button class="tab" onclick="filterMaint('CT', this)">Contrôle tech.</button>
+        <button class="tab" onclick="filterMaint('Vidange', this)">Vidange</button>
+      </div>
+      <div id="list-maintenance"></div>
+    </div>
+
+    <!-- PERSONNEL -->
+    <div class="page" id="page-personnel">
+      <div class="section-hdr">
+        <div class="section-title">👤 Personnel</div>
+        <button class="btn-add admin-only" onclick="openModal('modal-personnel')">+ Ajouter</button>
+      </div>
+      <div id="list-personnel"></div>
+    </div>
+
+    <!-- ARS TYPE A -->
+    <div class="page" id="page-arsA">
+      <div class="section-hdr">
+        <div class="section-title">💊 ARS Type A – Trafic</div>
+        <button class="btn-add" onclick="openModal('modal-arsA')">+ Ajouter</button>
+      </div>
+      <div class="search-bar">
+        <span>🔍</span>
+        <input class="search-input" id="search-arsA" placeholder="Rechercher un article..." oninput="searchArsA(this.value)">
+      </div>
+      <div class="tabs">
+        <button class="tab active" onclick="filterArs('A','tous',this)">Tous</button>
+        <button class="tab" onclick="filterArs('A','Périmé',this)">Périmés</button>
+        <button class="tab" onclick="filterArs('A','Bientôt périmé',this)">Bientôt</button>
+        <button class="tab" onclick="filterArs('A','Valide',this)">Valides</button>
+      </div>
+      <div id="list-arsA"></div>
+    </div>
+
+    <!-- ARS TYPE B -->
+    <div class="page" id="page-arsB">
+      <div class="section-hdr">
+        <div class="section-title">🏥 ARS Type B – ASSU</div>
+        <button class="btn-add" onclick="openModal('modal-arsB')">+ Ajouter</button>
+      </div>
+      <div class="search-bar">
+        <span>🔍</span>
+        <input class="search-input" id="search-arsB" placeholder="Rechercher un article..." oninput="searchArsB(this.value)">
+      </div>
+      <div id="list-arsB"></div>
+    </div>
+
+    <!-- MISSIONS -->
+    <div class="page" id="page-missions">
+      <div class="section-hdr">
+        <div class="section-title">📋 Missions</div>
+        <button class="btn-add admin-only" onclick="openModal('modal-mission')">+ Ajouter</button>
+      </div>
+      <div class="tabs">
+        <button class="tab active" onclick="filterMissions('tous',this)">Toutes</button>
+        <button class="tab" onclick="filterMissions('À valider',this)">À valider</button>
+        <button class="tab" onclick="filterMissions('Validé',this)">Validées</button>
+      </div>
+      <div id="list-missions"></div>
+    </div>
+
+    <!-- MESSAGERIE -->
+    <div class="page" id="page-messagerie">
+      <div class="section-hdr">
+        <div class="section-title">💬 Messagerie</div>
+      </div>
+      <div class="tabs">
+        <button class="tab active" onclick="showMsgTab('contacts',this)">Équipe</button>
+        <button class="tab" onclick="showMsgTab('mesmessages',this)" id="tab-mesmessages">
+          📩 Mes messages <span id="tab-msg-count" style="display:none;background:#D32F2F;color:white;border-radius:10px;padding:1px 6px;font-size:11px;font-weight:700;margin-left:4px"></span>
+        </button>
+        <button class="tab" onclick="showMsgTab('envoyer',this)">Envoyer mission</button>
+      </div>
+      <!-- Contacts -->
+      <div id="msg-tab-contacts">
+        <div id="list-contacts-msg"></div>
+      </div>
+      <!-- Mes messages reçus -->
+      <div id="msg-tab-mesmessages" style="display:none">
+        <div id="list-mes-messages"></div>
+      </div>
+      <!-- Envoyer mission -->
+      <div id="msg-tab-envoyer" style="display:none">
+        <div class="card" style="margin-bottom:12px">
+          <div class="form-group"><label class="form-label">Destinataire</label>
+            <select class="form-select" id="msg-dest"></select>
+          </div>
+          <div class="form-group"><label class="form-label">Mission concernée</label>
+            <select class="form-select" id="msg-mission"></select>
+          </div>
+          <div class="form-group"><label class="form-label">Message</label>
+            <textarea class="form-input" id="msg-texte" rows="4" placeholder="Détails de la mission, instructions..." style="resize:none"></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Photo jointe (optionnel)</label>
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px 12px;border:1.5px dashed var(--gray-300);border-radius:var(--radius-sm)">
+              <span style="font-size:20px">📷</span>
+              <span style="font-size:13px;color:var(--gray-500)" id="msg-photo-label">Appuyer pour ajouter une photo</span>
+              <input type="file" accept="image/*" id="msg-photo-input" style="display:none" onchange="previewMsgPhoto(this)">
+            </label>
+            <div id="msg-photo-preview" style="margin-top:8px;display:none">
+              <img id="msg-photo-img" style="width:100%;border-radius:var(--radius-sm);max-height:200px;object-fit:cover">
+              <button onclick="clearMsgPhoto()" style="margin-top:6px;font-size:12px;color:var(--red);background:none;border:none;cursor:pointer">✕ Supprimer la photo</button>
+            </div>
+          </div>
+          <button class="btn-primary" onclick="envoyerMission()">📤 Envoyer la mission</button>
+        </div>
+        <div id="list-messages-envoyes"></div>
+      </div>
+    </div>
+
+    <!-- ENTRETIENS / DÉSINFECTIONS -->
+    <div class="page" id="page-entretiens">
+      <div class="section-hdr">
+        <div class="section-title">🧼 Entretiens / Désinfections</div>
+        <button class="btn-add" onclick="openModal('modal-entretien')">+ Ajouter</button>
+      </div>
+      <div class="tabs">
+        <button class="tab active" onclick="filterEntretiens('tous',this)">Tous</button>
+        <button class="tab" onclick="filterEntretiens('Désinfection',this)">Désinfection</button>
+        <button class="tab" onclick="filterEntretiens('Vérification',this)">Vérification</button>
+        <button class="tab" onclick="filterEntretiens('alerte',this)">⚠️ Alertes</button>
+      </div>
+      <div id="list-entretiens"></div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /app -->
+
+<!-- MODALS -->
+
+<!-- Modal Véhicule -->
+<div class="modal-overlay" id="modal-vehicule">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-vehicule')">×</button>
+    <div class="modal-title">Nouveau véhicule</div>
+    <div class="form-group"><label class="form-label">Nom du véhicule</label><input class="form-input" id="v-nom" placeholder="ex: Ambulance 01"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Immatriculation</label><input class="form-input" id="v-immat" placeholder="AB-123-CD"></div>
+      <div class="form-group"><label class="form-label">Kilométrage actuel</label><input class="form-input" id="v-km" type="number" placeholder="0"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Date maintenance prévue</label><input class="form-input" id="v-maint" type="date"></div>
+    <div class="form-group"><label class="form-label">🔍 Prochain contrôle technique</label><input class="form-input" id="v-ct" type="date"></div>
+    <button class="btn-primary" onclick="saveVehicule()">Enregistrer</button>
+  </div>
+</div>
+
+<!-- Modal Carburant -->
+<div class="modal-overlay" id="modal-carburant">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-carburant')">×</button>
+    <div class="modal-title">Nouveau plein</div>
+    <div class="form-group"><label class="form-label">Date</label><input class="form-input" id="c-date" type="date"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Kilométrage</label><input class="form-input" id="c-km" type="number" placeholder="0"></div>
+      <div class="form-group"><label class="form-label">Litres</label><input class="form-input" id="c-litres" type="number" placeholder="0.0" step="0.1"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Véhicule</label>
+      <select class="form-select" id="c-veh"></select>
+    </div>
+    <div class="form-group"><label class="form-label">Responsable</label>
+      <select class="form-select" id="c-pers"></select>
+    </div>
+    <div class="form-group"><label class="form-label">Montant (€)</label><input class="form-input" id="c-montant" type="number" placeholder="0.00" step="0.01"></div>
+    <button class="btn-primary" onclick="saveCarburant()">Enregistrer</button>
+  </div>
+</div>
+
+<!-- Modal Maintenance -->
+<div class="modal-overlay" id="modal-maintenance">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-maintenance')">×</button>
+    <div class="modal-title">Nouvel entretien</div>
+    <div class="form-group"><label class="form-label">Type</label>
+      <select class="form-select" id="m-type">
+        <option>Vidange</option><option>Pneus</option><option>Disques/Plaquettes</option>
+        <option>Contrôle technique</option><option>Turbo</option><option>Courroie</option>
+        <option>Batterie</option><option>Climatisation</option><option>Autre</option>
+      </select>
+    </div>
+    <div class="form-group"><label class="form-label">Véhicule</label>
+      <select class="form-select" id="m-veh"></select>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Date</label><input class="form-input" id="m-date" type="date"></div>
+      <div class="form-group"><label class="form-label">Kilométrage</label><input class="form-input" id="m-km" type="number"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Prochaine échéance</label><input class="form-input" id="m-next" type="date"></div>
+    <div class="form-group"><label class="form-label">Notes</label><input class="form-input" id="m-notes" placeholder="Observations..."></div>
+    <button class="btn-primary" onclick="saveMaintenance()">Enregistrer</button>
+  </div>
+</div>
+
+<!-- Modal Personnel -->
+<div class="modal-overlay" id="modal-personnel">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-personnel')">×</button>
+    <div class="modal-title" id="p-modal-title">Nouveau personnel</div>
+    <input type="hidden" id="p-id">
+    <div class="form-group"><label class="form-label">Nom complet</label><input class="form-input" id="p-nom" placeholder="Prénom Nom"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Rôle</label>
+        <select class="form-select" id="p-role"><option>Ambulancier</option><option>Taxi</option><option>Auxiliaire</option><option>Ambulancier-Taxi</option><option>Auxiliaire-Taxi</option><option>Gestionnaire</option></select>
+      </div>
+      <div class="form-group"><label class="form-label">Téléphone</label><input class="form-input" id="p-tel" type="tel" placeholder="06 XX XX XX XX"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Carte jaune (exp.)</label><input class="form-input" id="p-cj" type="date"></div>
+      <div class="form-group"><label class="form-label">AFGSU 2 (exp.)</label><input class="form-input" id="p-afgsu" type="date"></div>
+    </div>
+    <button class="btn-primary" id="p-save-btn" onclick="savePersonnel()">Enregistrer</button>
+  </div>
+</div>
+
+<!-- Modal ARS A -->
+<div class="modal-overlay" id="modal-arsA">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-arsA')">×</button>
+    <div class="modal-title">Produit ARS Type A</div>
+    <div class="form-group"><label class="form-label">Nom du produit</label><input class="form-input" id="aa-nom" placeholder="Nom du médicament/produit"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Quantité ARS</label><input class="form-input" id="aa-qty" type="number" placeholder="0"></div>
+      <div class="form-group"><label class="form-label">Quantité stock</label><input class="form-input" id="aa-stock" type="number" placeholder="0"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Date réception</label><input class="form-input" id="aa-recep" type="date"></div>
+      <div class="form-group"><label class="form-label">Date de péremption</label><input class="form-input" id="aa-perem" type="date"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Commentaires</label><input class="form-input" id="aa-comment" placeholder="Observations, incidents..."></div>
+    <button class="btn-primary" onclick="saveArsA()">Enregistrer</button>
+  </div>
+</div>
+
+<!-- Modal ARS B -->
+<div class="modal-overlay" id="modal-arsB">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-arsB')">×</button>
+    <div class="modal-title">Produit ARS Type B – ASSU</div>
+    <div class="form-group"><label class="form-label">Nom du produit</label><input class="form-input" id="ab-nom" placeholder="Nom du produit"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Qté ARS</label><input class="form-input" id="ab-qars" type="number" placeholder="0"></div>
+      <div class="form-group"><label class="form-label">Qté ASSU</label><input class="form-input" id="ab-qassu" type="number" placeholder="0"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Qté stock</label><input class="form-input" id="ab-qstock" type="number" placeholder="0"></div>
+      <div class="form-group"><label class="form-label">Stock min.</label><input class="form-input" id="ab-stock" type="number" placeholder="0"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Date alerte</label><input class="form-input" id="ab-alert" type="date"></div>
+      <div class="form-group"><label class="form-label">Date péremption</label><input class="form-input" id="ab-perem" type="date"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Commentaires</label><input class="form-input" id="ab-comment" placeholder="Observations..."></div>
+    <button class="btn-primary" onclick="saveArsB()">Enregistrer</button>
+  </div>
+</div>
+
+<!-- Modal Mission -->
+<div class="modal-overlay" id="modal-mission">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-mission')">×</button>
+    <div class="modal-title">Nouvelle mission</div>
+    <div class="form-group"><label class="form-label">Nom de la mission</label><input class="form-input" id="ms-nom" placeholder="Description courte"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Type</label>
+        <select class="form-select" id="ms-type"><option>Urgence</option><option>Transport</option><option>Assistance</option><option>Autre</option></select>
+      </div>
+      <div class="form-group"><label class="form-label">Statut</label>
+        <select class="form-select" id="ms-statut"><option>À valider</option><option>Validé</option></select>
+      </div>
+    </div>
+    <div class="form-group"><label class="form-label">Véhicule</label>
+      <select class="form-select" id="ms-veh"></select>
+    </div>
+    <div class="form-group"><label class="form-label">Personnel assigné</label>
+      <select class="form-select" id="ms-pers"></select>
+    </div>
+    <div class="form-group"><label class="form-label">Date</label><input class="form-input" id="ms-date" type="date"></div>
+    <div class="form-group"><label class="form-label">Notes</label><input class="form-input" id="ms-notes" placeholder="Informations complémentaires..."></div>
+    <div class="form-group">
+      <label class="form-label">Photo de mission (optionnel)</label>
+      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px 12px;border:1.5px dashed var(--gray-300);border-radius:var(--radius-sm)">
+        <span style="font-size:20px">📷</span>
+        <span style="font-size:13px;color:var(--gray-500)" id="ms-photo-label">Appuyer pour ajouter une photo</span>
+        <input type="file" accept="image/*" id="ms-photo-input" style="display:none" onchange="previewMsPhoto(this)">
+      </label>
+      <div id="ms-photo-preview" style="margin-top:8px;display:none">
+        <img id="ms-photo-img" style="width:100%;border-radius:var(--radius-sm);max-height:180px;object-fit:cover">
+        <button onclick="clearMsPhoto()" style="margin-top:6px;font-size:12px;color:var(--red);background:none;border:none;cursor:pointer">✕ Supprimer</button>
+      </div>
+    </div>
+    <button class="btn-primary" onclick="saveMission()">Enregistrer</button>
+  </div>
+</div>
+
+<!-- Modal Entretien / Désinfection -->
+<div class="modal-overlay" id="modal-entretien">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-entretien')">×</button>
+    <div class="modal-title">🧼 Entretien / Désinfection</div>
+
+    <div class="form-group">
+      <label class="form-label">Types réalisés (jusqu'à 6)</label>
+      <div id="et-types-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:4px;">
+        <label style="display:flex;align-items:center;gap:8px;padding:8px 10px;border:1.5px solid var(--gray-300);border-radius:var(--radius-sm);cursor:pointer;font-size:13px;">
+          <input type="checkbox" value="Niveaux (tous)" onchange="checkMaxTypes(this)"> Niveaux (tous)
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;padding:8px 10px;border:1.5px solid var(--gray-300);border-radius:var(--radius-sm);cursor:pointer;font-size:13px;">
+          <input type="checkbox" value="Aspirateur" onchange="checkMaxTypes(this)"> Aspirateur
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;padding:8px 10px;border:1.5px solid var(--gray-300);border-radius:var(--radius-sm);cursor:pointer;font-size:13px;">
+          <input type="checkbox" value="Lavage extérieur" onchange="checkMaxTypes(this)"> Lavage extérieur
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;padding:8px 10px;border:1.5px solid var(--gray-300);border-radius:var(--radius-sm);cursor:pointer;font-size:13px;">
+          <input type="checkbox" value="Désinfection COVID" onchange="checkMaxTypes(this)"> Désinfection COVID
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;padding:8px 10px;border:1.5px solid var(--gray-300);border-radius:var(--radius-sm);cursor:pointer;font-size:13px;">
+          <input type="checkbox" value="Désinfection hebdo" onchange="checkMaxTypes(this)"> Désinfection hebdo
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;padding:8px 10px;border:1.5px solid var(--gray-300);border-radius:var(--radius-sm);cursor:pointer;font-size:13px;">
+          <input type="checkbox" value="Désinfection post-transport" onchange="checkMaxTypes(this)"> Désinfect. post-transport
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;padding:8px 10px;border:1.5px solid var(--gray-300);border-radius:var(--radius-sm);cursor:pointer;font-size:13px;">
+          <input type="checkbox" value="Vérification matériel" onchange="checkMaxTypes(this)"> Vérif. matériel
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;padding:8px 10px;border:1.5px solid var(--gray-300);border-radius:var(--radius-sm);cursor:pointer;font-size:13px;">
+          <input type="checkbox" value="Vérification documents" onchange="checkMaxTypes(this)"> Vérif. documents
+        </label>
+      </div>
+      <div id="et-types-warning" style="display:none;font-size:12px;color:var(--red);margin-top:6px;">Maximum 6 types sélectionnés</div>
+    </div>
+
+    <div class="form-group"><label class="form-label">Véhicule</label>
+      <select class="form-select" id="et-veh"></select>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Responsable(s) — jusqu'à 3</label>
+      <select class="form-select" id="et-pers" style="margin-bottom:6px"></select>
+      <select class="form-select" id="et-pers2" style="margin-bottom:6px"></select>
+      <select class="form-select" id="et-pers3"></select>
+    </div>
+
+    <div class="form-group"><label class="form-label">Date réalisée</label><input class="form-input" id="et-date" type="date"></div>
+    <div class="form-group"><label class="form-label">Produit(s) utilisé(s)</label><input class="form-input" id="et-produit" placeholder="ex: Surfa'safe, eau de javel..."></div>
+    <div class="form-group"><label class="form-label">Observations / Alertes</label>
+      <textarea class="form-input" id="et-obs" rows="3" placeholder="Anomalies, points de vigilance, zones traitées..." style="resize:none"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Niveau d'alerte</label>
+      <select class="form-select" id="et-alerte">
+        <option value="none">Aucune alerte</option>
+        <option value="warn">⚠️ À surveiller</option>
+        <option value="danger">🔴 Urgent</option>
+      </select>
+    </div>
+    <button class="btn-primary" onclick="saveEntretien()">Enregistrer</button>
+  </div>
+</div>
+
+<!-- Modal modifier CT véhicule -->
+<div class="modal-overlay" id="modal-veh-ct">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-veh-ct')">×</button>
+    <div class="modal-title">🔍 Modifier le contrôle technique</div>
+    <div class="card-sub" id="veh-ct-name" style="margin-bottom:14px;font-size:14px;color:var(--gray-600)"></div>
+    <input type="hidden" id="veh-ct-id">
+    <div class="form-group">
+      <label class="form-label">Date du prochain CT</label>
+      <input class="form-input" id="veh-ct-date" type="date">
+    </div>
+    <button class="btn-primary" onclick="saveVehCT()">Enregistrer</button>
+  </div>
+</div>
+
+<!-- Modal modifier kilométrage véhicule -->
+<div class="modal-overlay" id="modal-veh-km">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-veh-km')">×</button>
+    <div class="modal-title">✏️ Modifier le kilométrage</div>
+    <div class="card-sub" id="veh-km-name" style="margin-bottom:14px;font-size:14px;color:var(--gray-600)"></div>
+    <input type="hidden" id="veh-km-id">
+    <div class="form-group">
+      <label class="form-label">Kilométrage actuel (km)</label>
+      <input class="form-input" id="veh-km-val" type="number" placeholder="0">
+    </div>
+    <button class="btn-primary" onclick="saveVehKM()">Enregistrer</button>
+  </div>
+</div>
+
+<!-- Modal modifier ARS-A -->
+<div class="modal-overlay" id="modal-edit-arsA">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-edit-arsA')">×</button>
+    <div class="modal-title">✏️ Modifier ARS-A</div>
+    <div class="card-sub" id="edit-arsA-name" style="margin-bottom:14px;font-size:14px;color:var(--gray-600)"></div>
+    <input type="hidden" id="edit-arsA-id">
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Quantité ARS</label><input class="form-input" id="edit-arsA-qty" type="number" min="0"></div>
+      <div class="form-group"><label class="form-label">Quantité stock</label><input class="form-input" id="edit-arsA-stock" type="number" min="0"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Péremption</label><input class="form-input" id="edit-arsA-perem" type="date"></div>
+    <div class="form-group"><label class="form-label">Commentaire</label><input class="form-input" id="edit-arsA-comment" placeholder="Observations..."></div>
+    <button class="btn-primary" onclick="saveEditArsA()">Enregistrer</button>
+  </div>
+</div>
+
+<!-- Modal modifier ARS-B -->
+<div class="modal-overlay" id="modal-edit-arsB">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-edit-arsB')">×</button>
+    <div class="modal-title">✏️ Modifier ARS-B</div>
+    <div class="card-sub" id="edit-arsB-name" style="margin-bottom:14px;font-size:14px;color:var(--gray-600)"></div>
+    <input type="hidden" id="edit-arsB-id">
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Qté ARS</label><input class="form-input" id="edit-arsB-qars" type="number" min="0"></div>
+      <div class="form-group"><label class="form-label">Qté ASSU</label><input class="form-input" id="edit-arsB-qassu" type="number" min="0"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Qté stock</label><input class="form-input" id="edit-arsB-qstock" type="number" min="0"></div>
+      <div class="form-group"><label class="form-label">Péremption</label><input class="form-input" id="edit-arsB-perem" type="date"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Commentaire</label><input class="form-input" id="edit-arsB-comment" placeholder="Observations..."></div>
+    <button class="btn-primary" onclick="saveEditArsB()">Enregistrer</button>
+  </div>
+</div>
+
+<!-- Barre confirmation suppression -->
+<div id="confirm-bar" style="display:none;position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:var(--gray-900);color:white;padding:14px 20px;z-index:400;align-items:center;justify-content:space-between;gap:12px;">
+  <span style="font-size:14px;font-weight:500;">Supprimer cet élément ?</span>
+  <div style="display:flex;gap:8px">
+    <button onclick="cancelDel()" style="background:rgba(255,255,255,0.15);color:white;border:none;border-radius:6px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;">Annuler</button>
+    <button onclick="confirmDel()" style="background:var(--red);color:white;border:none;border-radius:6px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;">Supprimer</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ===========================
+// SUPABASE CONFIG
+// ===========================
+const SUPA_URL = 'https://gsqtcxndtgdeyxfluguy.supabase.co';
+const SUPA_KEY = 'sb_publishable_RAk6_PdtXNgUwYbZ5iXfeQ_oPgNHiVA';
+
+const TABLES = {
+  vehicules:'gbs_vehicules', personnel:'gbs_personnel', carburant:'gbs_carburant',
+  maintenance:'gbs_maintenance', arsA:'gbs_arsa', arsB:'gbs_arsb',
+  missions:'gbs_missions', entretiens:'gbs_entretiens', messages:'gbs_messages', seeded:'gbs_seeded'
+};
+const CACHE = {};
+
+function supaFetch(path, method='GET', body=null) {
+  const opts = { method, headers: { 'apikey':SUPA_KEY, 'Authorization':'Bearer '+SUPA_KEY, 'Content-Type':'application/json', 'Prefer': method==='POST'?'return=representation':'' } };
+  if(body) opts.body = JSON.stringify(body);
+  return fetch(SUPA_URL+'/rest/v1/'+path, opts).then(r=>r.ok?r.json():r.text().then(t=>{throw new Error(t);}));
+}
+
+async function loadAllFromCloud() {
+  await Promise.all(Object.keys(TABLES).map(async k=>{
+    try { const d=await supaFetch(TABLES[k]+'?order=id'); CACHE[k]=Array.isArray(d)?d:[]; }
+    catch(e){ CACHE[k]=[]; }
+  }));
+}
+
+const DB = {
+  get(k) { return CACHE[k]||[]; },
+  async set(k, arr) {
+    CACHE[k] = arr;
+    const t = TABLES[k]; if(!t) return;
+    try {
+      await supaFetch(t+'?id=neq.___none___', 'DELETE');
+      if(arr.length) await supaFetch(t, 'POST', arr);
+    } catch(e){ console.error('Supabase write error',k,e); showToast('Erreur cloud — réessaie'); }
+  },
+  id() { return Date.now().toString(36)+Math.random().toString(36).substr(2,4); }
+};
+
+// ===========================
+// DATA STORE
+// ===========================
+
+// Demo data seed
+async function seedData() {
+  if(DB.get('seeded').length && DB.get('seeded')[0] === '6') return;
+  await DB.set('vehicules',[
+    {id:'v01',nom:'Ambu TRAFIC',immat:'',km:0,maintDate:'',ctDate:''},
+    {id:'v02',nom:'Ambu ASSU',immat:'',km:0,maintDate:'',ctDate:''},
+    {id:'v03',nom:'Clio VSL',immat:'',km:0,maintDate:'',ctDate:''},
+    {id:'v04',nom:'Skoda VSL',immat:'',km:0,maintDate:'',ctDate:''},
+    {id:'v05',nom:'Clio Taxi',immat:'',km:0,maintDate:'',ctDate:''},
+    {id:'v06',nom:'Skoda Taxi',immat:'',km:0,maintDate:'',ctDate:''},
+    {id:'v07',nom:'Vito Taxi',immat:'',km:0,maintDate:'',ctDate:''},
+    {id:'v08',nom:'Honda Taxi',immat:'',km:0,maintDate:'',ctDate:''},
+    {id:'v09',nom:'TOYOTA',immat:'',km:0,maintDate:'',ctDate:''},
+    {id:'v10',nom:'Vito NOIR',immat:'',km:0,maintDate:'',ctDate:''},
+    {id:'v11',nom:'Corbillard',immat:'',km:0,maintDate:'',ctDate:''},
+    {id:'v12',nom:'Funé 9 places',immat:'',km:0,maintDate:'',ctDate:''}
+  ]);
+  await DB.set('personnel',[
+    {id:'p01',nom:'Ange',role:'Ambulancier',tel:'06 50 92 12 14',carteJaune:'',afgsu:''},
+    {id:'p02',nom:'Cédric',role:'Ambulancier',tel:'06 41 30 32 03',carteJaune:'',afgsu:''},
+    {id:'p03',nom:'Céline',role:'Ambulancier',tel:'06 69 50 04 18',carteJaune:'',afgsu:''},
+    {id:'p04',nom:'Doudou',role:'Ambulancier',tel:'06 66 55 06 34',carteJaune:'',afgsu:''},
+    {id:'p05',nom:'Florent',role:'Ambulancier',tel:'06 07 55 93 14',carteJaune:'',afgsu:''},
+    {id:'p06',nom:'François',role:'Ambulancier',tel:'06 99 86 61 18',carteJaune:'',afgsu:''},
+    {id:'p07',nom:'Marine',role:'Ambulancier',tel:'06 45 44 23 39',carteJaune:'',afgsu:''},
+    {id:'p08',nom:'Mickael',role:'Ambulancier',tel:'06 64 64 24 35',carteJaune:'',afgsu:''},
+    {id:'p09',nom:'Momo',role:'Ambulancier',tel:'06 62 73 49 17',carteJaune:'',afgsu:''},
+    {id:'p10',nom:'Nadia',role:'Ambulancier',tel:'07 88 36 77 63',carteJaune:'',afgsu:''},
+    {id:'p11',nom:'Olivier',role:'Ambulancier',tel:'06 60 66 21 17',carteJaune:'',afgsu:''},
+    {id:'p12',nom:'Pepette',role:'Ambulancier',tel:'07 50 52 51 08',carteJaune:'',afgsu:''},
+    {id:'p13',nom:'Sébastien',role:'Ambulancier',tel:'06 10 68 31 67',carteJaune:'',afgsu:''},
+    {id:'p14',nom:'Valentin',role:'Ambulancier',tel:'06 58 37 38 15',carteJaune:'',afgsu:''}
+  ]);
+  await DB.set('carburant',[
+    {id:'c1',date:'2024-03-10',km:45000,litres:65,vehiculeId:'v1',personnelId:'p1',montant:95.50},
+    {id:'c2',date:'2024-03-12',km:89200,litres:70,vehiculeId:'v2',personnelId:'p2',montant:102.20}
+  ]);
+  await DB.set('maintenance',[
+    {id:'m1',type:'Contrôle technique',vehiculeId:'v1',date:'2024-02-01',km:44000,nextDate:'2025-02-01',notes:'RAS'},
+    {id:'m2',type:'Vidange',vehiculeId:'v2',date:'2024-01-15',km:88000,nextDate:'2024-04-15',notes:'Filtre changé'}
+  ]);
+  await DB.set('arsA',[
+    {id:'a01',nom:'Aspirateur électrique',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a02',nom:'Aspirateur manuel',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a03',nom:'Attelles (jeu de 5)',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a04',nom:'Bandelettes glycémie',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a05',nom:'Bassin de lit (femme)',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a06',nom:'Bombe bactéricide unité',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a07',nom:'Canules de Guédel (jeu de 7)',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a08',nom:'Carnet désinfections',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a09',nom:'Civière cuillère (type scoop)',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a10',nom:'Colliers cervicaux (jeu de 3)',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a11',nom:'Coupe-ceinture de sécurité',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a12',nom:'Couverture bactériostatique',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a13',nom:'Défibrillateur (véhicule)',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a14',nom:'Draps housses jetables',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a15',nom:'Électrodes Zoll AED Padz Adulte',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a16',nom:'Électrodes Zoll AED PédiPadz II Enfant',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a17',nom:'Extincteur à poudre ABC 1kg',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a18',nom:'Gants non stériles (bte de 100)',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a19',nom:'Gants stériles taille M (7-8)',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a20',nom:'Haricot',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a21',nom:'Insufflateur adulte usage unique',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a22',nom:'Insufflateur néonatal usage unique',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a23',nom:'Insufflateur pédiatrique usage unique',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a24',nom:'KIT accouchement',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a25',nom:'KIT AES',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a26',nom:'KIT brûlures',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a27',nom:"KIT d'urgence défibrillateur",qty:0,reception:'',peremption:'',comment:''},
+    {id:'a28',nom:'KIT Hémorragies',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a29',nom:'KIT masque bouche à bouche',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a30',nom:'KIT membre sectionné (main/pied)',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a31',nom:'KIT plaies first aid',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a32',nom:'KIT protection infection (COVID)',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a33',nom:'KIT Réanimation adulte',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a34',nom:'KIT Réanimation enfant',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a35',nom:'KIT Réanimation nourrisson',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a36',nom:'KIT sécurité (2 triangles - 2 gilets)',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a37',nom:'Lampe diagnostic',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a38',nom:'Lampe torche',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a39',nom:'Lecteur de glycémie',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a40',nom:'Lunettes O2 adulte',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a41',nom:'Lunettes O2 pédiatrique',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a42',nom:'Masque de réanimation POCKET MASK',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a43',nom:'Masque FFP2',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a44',nom:'Masque O2 adulte',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a45',nom:'Masque O2 enfant',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a46',nom:'Masque O2 Haute concentration Adulte',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a47',nom:'Masque O2 Haute concentration Enfant',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a48',nom:'Masque O2 pédiatrique',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a49',nom:'Masques chirurgicaux (Bte 50)',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a50',nom:'Matelas coquille',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a51',nom:'Nacelle + filet',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a52',nom:'Oreiller bactériostatique',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a53',nom:'Oxymètre de pouls',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a54',nom:'Pans. compressif CHUT hémostatique',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a55',nom:'Pompe à dépression',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a56',nom:'Sac DASRI',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a57',nom:'Sac VOMIX',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a58',nom:'Sangles contentions',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a59',nom:"Sonde d'aspiration CH06 - turquoise",qty:0,reception:'',peremption:'',comment:''},
+    {id:'a60',nom:"Sonde d'aspiration CH08 - bleu",qty:0,reception:'',peremption:'',comment:''},
+    {id:'a61',nom:"Sonde d'aspiration CH12 - blanc",qty:0,reception:'',peremption:'',comment:''},
+    {id:'a62',nom:"Sonde d'aspiration CH16 - orange",qty:0,reception:'',peremption:'',comment:''},
+    {id:'a63',nom:'Spray désinfectant surfaces',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a64',nom:'Stéthoscope',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a65',nom:'Surchaussures (paire)',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a66',nom:"Taies d'oreiller jetables",qty:0,reception:'',peremption:'',comment:''},
+    {id:'a67',nom:'Tensio manuel (5 brassards 10-66 cm)',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a68',nom:'Tensiomètre automatique',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a69',nom:'Thermomètre électronique',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a70',nom:'Thermomètre nourrissons (galium)',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a71',nom:'Urinal homme (pistolet)',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a72',nom:'Colonne BL',qty:0,reception:'',peremption:'',comment:''},
+    {id:'a73',nom:'Défibrillateur (ASSU)',qty:0,reception:'',peremption:'',comment:''}
+  ]);
+  await DB.set('arsB',[
+    {id:'b01',nom:'Aspirateur électrique',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b02',nom:'Aspirateur manuel',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b03',nom:'Attelles (jeu de 5)',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b04',nom:'Bandelettes glycémie',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b05',nom:'Bassin de lit (femme)',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b06',nom:'Bombe bactéricide unité',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b07',nom:'Canules de Guédel (jeu de 7)',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b08',nom:'Carnet désinfections',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b09',nom:'Civière cuillère (type scoop)',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b10',nom:'Colliers cervicaux (jeu de 3)',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b11',nom:'Coupe-ceinture de sécurité',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b12',nom:'Couverture bactériostatique',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b13',nom:'Défibrillateur (véhicule)',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b14',nom:'Draps housses jetables',qArs:0,qAssu:0,stockMin:5,alertDate:'',peremption:'',comment:''},
+    {id:'b15',nom:'Électrodes Zoll AED Padz Adulte',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b16',nom:'Électrodes Zoll AED PédiPadz II Enfant',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b17',nom:'Extincteur à poudre ABC 1kg',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b18',nom:'Gants non stériles (bte de 100)',qArs:0,qAssu:0,stockMin:2,alertDate:'',peremption:'',comment:''},
+    {id:'b19',nom:'Gants stériles taille M (7-8)',qArs:0,qAssu:0,stockMin:5,alertDate:'',peremption:'',comment:''},
+    {id:'b20',nom:'Insufflateur adulte usage unique',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b21',nom:'Insufflateur néonatal usage unique',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b22',nom:'Insufflateur pédiatrique usage unique',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b23',nom:'KIT accouchement',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b24',nom:'KIT AES',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b25',nom:'KIT brûlures',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b26',nom:'KIT urgence défibrillateur',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b27',nom:'KIT Hémorragies',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b28',nom:'KIT masque bouche à bouche',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b29',nom:'KIT membre sectionné (main/pied)',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b30',nom:'KIT plaies first aid',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b31',nom:'KIT protection infection (COVID)',qArs:0,qAssu:0,stockMin:2,alertDate:'',peremption:'',comment:''},
+    {id:'b32',nom:'KIT Réanimation adulte',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b33',nom:'KIT Réanimation enfant',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b34',nom:'KIT Réanimation nourrisson',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b35',nom:'KIT sécurité (2 triangles - 2 gilets)',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b36',nom:'Lampe diagnostic',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b37',nom:'Lampe torche',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b38',nom:'Lecteur de glycémie',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b39',nom:'Lunettes O2 adulte',qArs:0,qAssu:0,stockMin:2,alertDate:'',peremption:'',comment:''},
+    {id:'b40',nom:'Lunettes O2 pédiatrique',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b41',nom:'Masque de réanimation POCKET MASK',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b42',nom:'Masque FFP2',qArs:0,qAssu:0,stockMin:5,alertDate:'',peremption:'',comment:''},
+    {id:'b43',nom:'Masque O2 adulte',qArs:0,qAssu:0,stockMin:2,alertDate:'',peremption:'',comment:''},
+    {id:'b44',nom:'Masque O2 enfant',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b45',nom:'Masque O2 Haute concentration Adulte',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b46',nom:'Masque O2 Haute concentration Enfant',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b47',nom:'Masque O2 pédiatrique',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b48',nom:'Masques chirurgicaux (Bte 50)',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b49',nom:'Matelas coquille',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b50',nom:'Nacelle',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b51',nom:'Oreiller bactériostatique',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b52',nom:'Oxymètre de pouls',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b53',nom:'Pans. compressif CHUT hémostatique',qArs:0,qAssu:0,stockMin:2,alertDate:'',peremption:'',comment:''},
+    {id:'b54',nom:'Pompe à dépression',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b55',nom:'Sac DASRI',qArs:0,qAssu:0,stockMin:3,alertDate:'',peremption:'',comment:''},
+    {id:'b56',nom:'Sac VOMIX',qArs:0,qAssu:0,stockMin:2,alertDate:'',peremption:'',comment:''},
+    {id:'b57',nom:'Sangles contentions',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b58',nom:"Sonde d'aspiration CH06 - turquoise",qArs:0,qAssu:0,stockMin:2,alertDate:'',peremption:'',comment:''},
+    {id:'b59',nom:"Sonde d'aspiration CH08 - bleu",qArs:0,qAssu:0,stockMin:2,alertDate:'',peremption:'',comment:''},
+    {id:'b60',nom:"Sonde d'aspiration CH12 - blanc",qArs:0,qAssu:0,stockMin:2,alertDate:'',peremption:'',comment:''},
+    {id:'b61',nom:"Sonde d'aspiration CH16 - orange",qArs:0,qAssu:0,stockMin:2,alertDate:'',peremption:'',comment:''},
+    {id:'b62',nom:'Spray désinfectant surfaces',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b63',nom:'Stéthoscope',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b64',nom:'Surchaussures (paire)',qArs:0,qAssu:0,stockMin:5,alertDate:'',peremption:'',comment:''},
+    {id:'b65',nom:"Taies d'oreiller jetables",qArs:0,qAssu:0,stockMin:3,alertDate:'',peremption:'',comment:''},
+    {id:'b66',nom:'Tensio manuel (5 brassards 10-66 cm)',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b67',nom:'Tensiomètre automatique',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b68',nom:'Thermomètre électronique',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b69',nom:'Thermomètre nourrissons (galium)',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b70',nom:'Urinal homme (pistolet)',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b71',nom:'Défibrillateur (ASSU)',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b72',nom:'Colonne BL',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''},
+    {id:'b73',nom:'MATERIEL TYPE B - Divers',qArs:0,qAssu:0,stockMin:1,alertDate:'',peremption:'',comment:''}
+  ]);
+  await DB.set('missions',[
+    {id:'ms1',nom:'Transport CHU Montpellier',type:'Transport',statut:'Validé',vehiculeId:'v01',personnelId:'p01',date:'2024-03-15',notes:''},
+    {id:'ms2',nom:'Urgence route D900',type:'Urgence',statut:'À valider',vehiculeId:'v02',personnelId:'p03',date:'2024-03-16',notes:'Accident AVP'}
+  ]);
+  await DB.set('seeded',['6']);
+  renderAll();
+}
+
+// ===========================
+// AUTH
+// ===========================
+let currentRole = 'user'; // 'admin' ou 'user'
+const PASS_ADMIN = 'admin';
+const PASS_USER  = 'bussiere'; // mot de passe employé commun
+
+function doLogin() {
+  const u = document.getElementById('login-user').value.trim();
+  const p = document.getElementById('login-pass').value;
+  if(!u) return showToast('Identifiant requis');
+  if(p === PASS_ADMIN) {
+    currentRole = 'admin';
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('dash-user').textContent = u + ' — Administrateur';
+    applyRoleUI();
+    renderAll();
+    showToast('Bienvenue, '+u+' !');
+  } else if(p === PASS_USER) {
+    currentRole = 'user';
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('dash-user').textContent = u + ' — Employé';
+    applyRoleUI();
+    renderAll();
+    showToast('Bienvenue, '+u+' !');
+  } else {
+    showToast('Mot de passe incorrect');
+  }
+}
+document.getElementById('login-pass').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
+
+function isAdmin() { return currentRole === 'admin'; }
+
+function applyRoleUI() {
+  // Éléments visibles admin seulement
+  document.querySelectorAll('.admin-only').forEach(el=>{
+    el.style.display = isAdmin() ? '' : 'none';
+  });
+  // Badge rôle dans header
+  const rb = document.getElementById('role-badge');
+  if(rb) {
+    rb.style.display = 'block';
+    rb.textContent = isAdmin() ? '👑 Administrateur' : '👤 Employé';
+  }
+}
+
+// ===========================
+// NAVIGATION
+// ===========================
+
+// ===========================
+// MODALS
+// ===========================
+function openModal(id) {
+  // Modals réservés admin
+  const adminOnlyModals = ['modal-vehicule','modal-personnel','modal-mission'];
+  if(adminOnlyModals.includes(id) && !isAdmin()) {
+    showToast('Action réservée à l\'administrateur');
+    return;
+  }
+  populateSelects();
+  const today = new Date().toISOString().split('T')[0];
+  const dateInputs = document.querySelectorAll('#'+id+' input[type="date"]');
+  dateInputs.forEach(i=>{ if(!i.value) i.value=today; });
+  if(id==='modal-personnel') {
+    document.getElementById('p-id').value='';
+    document.getElementById('p-modal-title').textContent='Nouveau personnel';
+    document.getElementById('p-save-btn').textContent='Enregistrer';
+    document.getElementById('p-nom').value='';
+    document.getElementById('p-tel').value='';
+    document.getElementById('p-cj').value='';
+    document.getElementById('p-afgsu').value='';
+  }
+  document.getElementById(id).classList.add('open');
+}
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(o=>{
+  o.addEventListener('click', e=>{ if(e.target===o) o.classList.remove('open'); });
+});
+
+function populateSelects() {
+  const vehs = DB.get('vehicules');
+  const pers = DB.get('personnel');
+  ['c-veh','m-veh','ms-veh','et-veh'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.innerHTML = '<option value="">-- Choisir --</option>'+vehs.map(v=>`<option value="${v.id}">${v.nom} (${v.immat})</option>`).join('');
+  });
+  ['c-pers','ms-pers','et-pers','et-pers2','et-pers3'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.innerHTML = '<option value="">-- Choisir --</option>'+pers.map(p=>`<option value="${p.id}">${p.nom}</option>`).join('');
+  });
+}
+
+// ===========================
+// SAVE FUNCTIONS
+// ===========================
+function saveVehicule() {
+  const nom = document.getElementById('v-nom').value.trim();
+  if(!nom) return showToast('Nom requis');
+  const arr = DB.get('vehicules');
+  arr.push({id:DB.id(),nom,immat:document.getElementById('v-immat').value,km:parseInt(document.getElementById('v-km').value)||0,maintDate:document.getElementById('v-maint').value,ctDate:document.getElementById('v-ct').value});
+  DB.set('vehicules',arr); closeModal('modal-vehicule'); renderAll(); showToast('Véhicule ajouté ✓');
+  document.getElementById('v-nom').value=''; document.getElementById('v-immat').value=''; document.getElementById('v-km').value=''; document.getElementById('v-ct').value='';
+}
+function saveCarburant() {
+  const vehId = document.getElementById('c-veh').value;
+  const km = parseInt(document.getElementById('c-km').value)||0;
+  const arr = DB.get('carburant');
+  arr.push({id:DB.id(),date:document.getElementById('c-date').value,km,litres:parseFloat(document.getElementById('c-litres').value)||0,vehiculeId:vehId,personnelId:document.getElementById('c-pers').value,montant:parseFloat(document.getElementById('c-montant').value)||0});
+  DB.set('carburant',arr);
+  // Mise à jour auto du kilométrage du véhicule si le km plein > km actuel
+  if(vehId && km > 0) {
+    const vehs = DB.get('vehicules');
+    const idx = vehs.findIndex(v=>v.id===vehId);
+    if(idx>=0 && km > (vehs[idx].km||0)) {
+      vehs[idx].km = km;
+      DB.set('vehicules', vehs);
+    }
+  }
+  // Mise à jour auto du niveau carburant → Plein sur l'accueil
+  if(vehId) {
+    const levels = JSON.parse(localStorage.getItem('gbs_fuellevels')||'{}');
+    levels[vehId] = 'plein';
+    localStorage.setItem('gbs_fuellevels', JSON.stringify(levels));
+  }
+  closeModal('modal-carburant'); renderAll(); showToast('Plein enregistré — niveau mis à jour ✓');
+}
+function saveMaintenance() {
+  const vehId = document.getElementById('m-veh').value;
+  const type = document.getElementById('m-type').value;
+  const nextDate = document.getElementById('m-next').value;
+  const arr = DB.get('maintenance');
+  arr.push({id:DB.id(),type,vehiculeId:vehId,date:document.getElementById('m-date').value,km:parseInt(document.getElementById('m-km').value)||0,nextDate,notes:document.getElementById('m-notes').value});
+  DB.set('maintenance',arr);
+
+  // Mise à jour auto dans la fiche véhicule
+  if(vehId && nextDate) {
+    const vehs = DB.get('vehicules');
+    const idx = vehs.findIndex(v=>v.id===vehId);
+    if(idx>=0) {
+      // Toujours mettre à jour la date de maintenance prévue
+      vehs[idx].maintDate = nextDate;
+      // Si c'est un CT, mettre à jour aussi la date CT dédiée
+      if(type==='Contrôle technique') {
+        vehs[idx].ctDate = nextDate;
+      }
+      DB.set('vehicules', vehs);
+      showToast(type==='Contrôle technique'
+        ? 'CT enregistré — flotte mise à jour ✓'
+        : 'Maintenance enregistrée — flotte mise à jour ✓');
+    } else {
+      showToast('Maintenance enregistrée ✓');
+    }
+  } else {
+    showToast('Maintenance enregistrée ✓');
+  }
+  closeModal('modal-maintenance'); renderAll();
+}
+
+function editVehCT(id) {
+  const v = DB.get('vehicules').find(x=>x.id===id);
+  if(!v) return;
+  document.getElementById('veh-ct-id').value = id;
+  document.getElementById('veh-ct-name').textContent = v.nom+' — '+v.immat;
+  document.getElementById('veh-ct-date').value = v.ctDate||'';
+  document.getElementById('modal-veh-ct').classList.add('open');
+}
+function saveVehCT() {
+  const id = document.getElementById('veh-ct-id').value;
+  const date = document.getElementById('veh-ct-date').value;
+  if(!date) return showToast('Date requise');
+  const vehs = DB.get('vehicules');
+  const idx = vehs.findIndex(v=>v.id===id);
+  if(idx>=0){ vehs[idx].ctDate = date; DB.set('vehicules',vehs); }
+  closeModal('modal-veh-ct'); renderAll(); showToast('Date CT mise à jour ✓');
+}
+
+function editVehKM(id) {
+  const v = DB.get('vehicules').find(x=>x.id===id);
+  if(!v) return;
+  document.getElementById('veh-km-id').value = id;
+  document.getElementById('veh-km-name').textContent = v.nom+' — '+v.immat;
+  document.getElementById('veh-km-val').value = v.km||0;
+  document.getElementById('modal-veh-km').classList.add('open');
+}
+function saveVehKM() {
+  const id = document.getElementById('veh-km-id').value;
+  const km = parseInt(document.getElementById('veh-km-val').value)||0;
+  const vehs = DB.get('vehicules');
+  const idx = vehs.findIndex(v=>v.id===id);
+  if(idx>=0){ vehs[idx].km = km; DB.set('vehicules',vehs); }
+  closeModal('modal-veh-km'); renderAll(); showToast('Kilométrage mis à jour ✓');
+}
+function savePersonnel() {
+  const nom = document.getElementById('p-nom').value.trim();
+  if(!nom) return showToast('Nom requis');
+  const existingId = document.getElementById('p-id').value;
+  const arr = DB.get('personnel');
+  const data = {
+    nom,
+    role: document.getElementById('p-role').value,
+    tel: document.getElementById('p-tel').value,
+    carteJaune: document.getElementById('p-cj').value,
+    afgsu: document.getElementById('p-afgsu').value
+  };
+  if(existingId) {
+    const idx = arr.findIndex(x=>x.id===existingId);
+    if(idx>=0) arr[idx] = {...arr[idx], ...data};
+    showToast(nom+' mis à jour ✓');
+  } else {
+    arr.push({id:DB.id(), ...data});
+    showToast('Personnel ajouté ✓');
+  }
+  DB.set('personnel',arr);
+  closeModal('modal-personnel');
+  // Reset form
+  document.getElementById('p-id').value='';
+  document.getElementById('p-nom').value='';
+  document.getElementById('p-tel').value='';
+  document.getElementById('p-cj').value='';
+  document.getElementById('p-afgsu').value='';
+  document.getElementById('p-modal-title').textContent='Nouveau personnel';
+  document.getElementById('p-save-btn').textContent='Enregistrer';
+  renderAll();
+}
+function saveArsA() {
+  const nom = document.getElementById('aa-nom').value.trim();
+  if(!nom) return showToast('Nom requis');
+  const arr = DB.get('arsA');
+  arr.push({id:DB.id(),nom,qty:parseInt(document.getElementById('aa-qty').value)||0,stock:parseInt(document.getElementById('aa-stock').value)||0,reception:document.getElementById('aa-recep').value,peremption:document.getElementById('aa-perem').value,comment:document.getElementById('aa-comment').value});
+  DB.set('arsA',arr); closeModal('modal-arsA'); renderAll(); showToast('Produit ARS-A ajouté ✓');
+  document.getElementById('aa-nom').value=''; document.getElementById('aa-comment').value=''; document.getElementById('aa-qty').value=''; document.getElementById('aa-stock').value='';
+}
+function saveArsB() {
+  const nom = document.getElementById('ab-nom').value.trim();
+  if(!nom) return showToast('Nom requis');
+  const arr = DB.get('arsB');
+  arr.push({id:DB.id(),nom,qArs:parseInt(document.getElementById('ab-qars').value)||0,qAssu:parseInt(document.getElementById('ab-qassu').value)||0,qStock:parseInt(document.getElementById('ab-qstock').value)||0,stockMin:parseInt(document.getElementById('ab-stock').value)||0,alertDate:document.getElementById('ab-alert').value,peremption:document.getElementById('ab-perem').value,comment:document.getElementById('ab-comment').value});
+  DB.set('arsB',arr); closeModal('modal-arsB'); renderAll(); showToast('Produit ARS-B ajouté ✓');
+  document.getElementById('ab-nom').value=''; document.getElementById('ab-comment').value='';
+}
+function saveMission() {
+  const nom = document.getElementById('ms-nom').value.trim();
+  if(!nom) return showToast('Nom requis');
+  const arr = DB.get('missions');
+  const photoData = document.getElementById('ms-photo-img').src && document.getElementById('ms-photo-preview').style.display!=='none' ? document.getElementById('ms-photo-img').src : '';
+  arr.push({id:DB.id(),nom,type:document.getElementById('ms-type').value,statut:document.getElementById('ms-statut').value,vehiculeId:document.getElementById('ms-veh').value,personnelId:document.getElementById('ms-pers').value,date:document.getElementById('ms-date').value,notes:document.getElementById('ms-notes').value,photo:photoData});
+  DB.set('missions',arr); closeModal('modal-mission'); clearMsPhoto(); renderAll(); showToast('Mission créée ✓');
+  document.getElementById('ms-nom').value='';
+}
+function checkMaxTypes(cb) {
+  const checked = document.querySelectorAll('#et-types-grid input[type="checkbox"]:checked');
+  const warn = document.getElementById('et-types-warning');
+  if(checked.length > 6) { cb.checked = false; warn.style.display='block'; return; }
+  warn.style.display = checked.length === 6 ? 'block' : 'none';
+  if(checked.length === 6) warn.textContent = 'Maximum 6 types atteint';
+  // Disable unchecked if max reached
+  document.querySelectorAll('#et-types-grid input[type="checkbox"]').forEach(c=>{
+    c.disabled = checked.length >= 6 && !c.checked;
+    c.closest('label').style.opacity = (checked.length >= 6 && !c.checked) ? '0.4' : '1';
+  });
+}
+function saveEntretien() {
+  const checked = [...document.querySelectorAll('#et-types-grid input[type="checkbox"]:checked')];
+  if(!checked.length) return showToast('Sélectionne au moins un type');
+  const types = checked.map(c=>c.value).join(', ');
+  const arr = DB.get('entretiens');
+  arr.push({
+    id: DB.id(),
+    type: types,
+    vehiculeId: document.getElementById('et-veh').value,
+    personnelId: document.getElementById('et-pers').value,
+    personnelId2: document.getElementById('et-pers2').value,
+    personnelId3: document.getElementById('et-pers3').value,
+    date: document.getElementById('et-date').value,
+    produit: document.getElementById('et-produit').value,
+    obs: document.getElementById('et-obs').value,
+    alerte: document.getElementById('et-alerte').value
+  });
+  DB.set('entretiens', arr);
+  closeModal('modal-entretien');
+  // Reset checkboxes
+  document.querySelectorAll('#et-types-grid input[type="checkbox"]').forEach(c=>{ c.checked=false; c.disabled=false; c.closest('label').style.opacity='1'; });
+  document.getElementById('et-types-warning').style.display='none';
+  document.getElementById('et-produit').value='';
+  document.getElementById('et-obs').value='';
+  document.getElementById('et-alerte').value='none';
+  renderAll();
+  showToast('Entretien enregistré ✓');
+}
+
+// ===========================
+// DELETE
+// ===========================
+let _pendingDel = null;
+function del(store, id) {
+  if(!isAdmin()) return showToast('Action réservée à l\'administrateur');
+  _pendingDel = {store, id};
+  const el = document.getElementById('confirm-bar');
+  el.style.display = 'flex';
+  setTimeout(()=>{ if(_pendingDel) cancelDel(); }, 5000);
+}
+function confirmDel() {
+  if(!_pendingDel) return;
+  DB.set(_pendingDel.store, DB.get(_pendingDel.store).filter(x=>x.id!==_pendingDel.id));
+  _pendingDel = null;
+  document.getElementById('confirm-bar').style.display='none';
+  renderAll();
+  showToast('Supprimé ✓');
+}
+function cancelDel() {
+  _pendingDel = null;
+  document.getElementById('confirm-bar').style.display='none';
+}
+
+// ===========================
+// HELPERS
+// ===========================
+function getVeh(id) { return DB.get('vehicules').find(v=>v.id===id)||{nom:'?'}; }
+function getPers(id) { return DB.get('personnel').find(p=>p.id===id)||{nom:'?'}; }
+function fmtDate(d) { if(!d) return '—'; const p=d.split('-'); return p[2]+'/'+p[1]+'/'+p[0]; }
+function daysUntil(dateStr) {
+  if(!dateStr) return 9999;
+  const now = new Date(); now.setHours(0,0,0,0);
+  const d = new Date(dateStr); d.setHours(0,0,0,0);
+  return Math.round((d-now)/(1000*60*60*24));
+}
+function peremStatus(dateStr) {
+  const d = daysUntil(dateStr);
+  if(d<0) return {label:'Périmé', cls:'badge-danger'};
+  if(d<=30) return {label:'Bientôt périmé', cls:'badge-orange'};
+  if(d<=90) return {label:'À surveiller', cls:'badge-warn'};
+  return {label:'Valide', cls:'badge-ok'};
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+function filterList(store, q, listId) {
+  const items = DB.get(store).filter(v=>(v.nom||'').toLowerCase().includes(q.toLowerCase())||(v.immat||'').toLowerCase().includes(q.toLowerCase()));
+  renderVehiculeList(items, listId);
+}
+
+// ===========================
+// RENDER FUNCTIONS
+// ===========================
+function renderVehiculeList(vehs, containerId) {
+  const el = document.getElementById(containerId||'list-vehicules');
+  if(!vehs.length){ el.innerHTML=emptyState('Aucun véhicule'); return; }
+  el.innerHTML = vehs.map(v=>{
+    const d = daysUntil(v.maintDate);
+    const maintBadge = d<0?`<span class="badge badge-danger">Dépassée</span>`:d<=30?`<span class="badge badge-warn">${d}j</span>`:`<span class="badge badge-ok">OK</span>`;
+    const dct = daysUntil(v.ctDate);
+    const ctBadge = !v.ctDate ? `<span class="badge" style="background:var(--gray-100);color:var(--gray-500)">Non renseigné</span>` : dct<0 ? `<span class="badge badge-danger">Dépassé</span>` : dct<=30 ? `<span class="badge badge-danger">${dct}j</span>` : `<span class="badge badge-ok">OK</span>`;
+    return `<div class="card">
+      <div class="card-header">
+        <div><div class="card-title">🚑 ${v.nom}</div><div class="card-sub">${v.immat}</div></div>
+        <div style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
+          ${!v.ctDate||dct<=30?ctBadge:''}
+          <button class="btn-edit" onclick="editVehCT('${v.id}')" title="Modifier le CT">🔍</button>
+          <button class="btn-del admin-only" onclick="del('vehicules','${v.id}')">🗑</button>
+        </div>
+      </div>
+      <div class="card-row">
+        <span class="card-label">Kilométrage</span>
+        <span class="card-value" style="display:flex;align-items:center;gap:8px">
+          ${v.km.toLocaleString()} km
+          <button class="btn-edit" onclick="editVehKM('${v.id}')" title="Modifier le kilométrage" style="font-size:13px">✏️</button>
+        </span>
+      </div>
+      <div class="card-row"><span class="card-label">Maintenance prévue</span><span class="card-value">${fmtDate(v.maintDate)}</span></div>
+      <div class="card-row">
+        <span class="card-label">🔍 Prochain CT</span>
+        <span class="card-value" style="display:flex;align-items:center;gap:6px">${v.ctDate?fmtDate(v.ctDate):'—'} ${ctBadge}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderCarburantList(filter) {
+  let arr = DB.get('carburant').sort((a,b)=>b.date.localeCompare(a.date));
+  const el = document.getElementById('list-carburant');
+  if(!arr.length){ el.innerHTML=emptyState('Aucun plein enregistré'); return; }
+  el.innerHTML = arr.map(c=>`<div class="card">
+    <div class="card-header">
+      <div><div class="card-title">⛽ ${fmtDate(c.date)}</div><div class="card-sub">${getVeh(c.vehiculeId).nom}</div></div>
+      <div style="display:flex;gap:6px;align-items:center"><span class="badge badge-info">${c.litres}L</span><button class="btn-del admin-only" onclick="del('carburant','${c.id}')">🗑</button></div>
+    </div>
+    <div class="card-row"><span class="card-label">Kilométrage</span><span class="card-value">${c.km.toLocaleString()} km</span></div>
+    <div class="card-row"><span class="card-label">Responsable</span><span class="card-value">${getPers(c.personnelId).nom}</span></div>
+    <div class="card-row"><span class="card-label">Montant</span><span class="card-value">${c.montant.toFixed(2)} €</span></div>
+  </div>`).join('');
+}
+
+function renderMaintenanceList(typeFilter) {
+  let arr = DB.get('maintenance').sort((a,b)=>b.date.localeCompare(a.date));
+  if(typeFilter&&typeFilter!=='tous') arr=arr.filter(m=>m.type===typeFilter);
+  const el = document.getElementById('list-maintenance');
+  if(!arr.length){ el.innerHTML=emptyState('Aucune maintenance'); return; }
+  el.innerHTML = arr.map(m=>{
+    const d=daysUntil(m.nextDate);
+    const badge = d<0?`<span class="badge badge-danger">Dépassée</span>`:d<=30?`<span class="badge badge-warn">${d}j</span>`:`<span class="badge badge-ok">OK</span>`;
+    return `<div class="card">
+      <div class="card-header">
+        <div><div class="card-title">🔧 ${m.type}</div><div class="card-sub">${getVeh(m.vehiculeId).nom}</div></div>
+        <div style="display:flex;gap:6px;align-items:center">${badge}<button class="btn-del admin-only" onclick="del('maintenance','${m.id}')">🗑</button></div>
+      </div>
+      <div class="card-row"><span class="card-label">Date</span><span class="card-value">${fmtDate(m.date)}</span></div>
+      <div class="card-row"><span class="card-label">Kilométrage</span><span class="card-value">${m.km.toLocaleString()} km</span></div>
+      <div class="card-row"><span class="card-label">Prochaine échéance</span><span class="card-value">${fmtDate(m.nextDate)}</span></div>
+      ${m.notes?`<div class="card-row"><span class="card-label">Notes</span><span class="card-value">${m.notes}</span></div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function renderPersonnelList() {
+  const arr = DB.get('personnel');
+  const el = document.getElementById('list-personnel');
+  if(!arr.length){ el.innerHTML=emptyState('Aucun personnel'); return; }
+  el.innerHTML = arr.map(p=>{
+    const dcj = daysUntil(p.carteJaune);
+    const dafg = daysUntil(p.afgsu);
+    const cjBadge = !p.carteJaune ? `<span class="badge" style="background:var(--gray-100);color:var(--gray-500)">—</span>` : dcj<0?`<span class="badge badge-danger">Expirée</span>`:dcj<=90?`<span class="badge badge-warn">${dcj}j</span>`:`<span class="badge badge-ok">OK</span>`;
+    const afgBadge = !p.afgsu ? `<span class="badge" style="background:var(--gray-100);color:var(--gray-500)">—</span>` : dafg<0?`<span class="badge badge-danger">Expirée</span>`:dafg<=180?`<span class="badge badge-warn">${dafg}j</span>`:`<span class="badge badge-ok">OK</span>`;
+    const initiales = p.nom.split(' ').map(x=>x[0]).join('').toUpperCase().substr(0,2);
+    return `<div class="card">
+      <div class="card-header">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:40px;height:40px;border-radius:50%;background:var(--blue-soft);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:var(--blue-primary);flex-shrink:0">${initiales}</div>
+          <div><div class="card-title">${p.nom}</div><div class="card-sub">${p.role||'—'}</div></div>
+        </div>
+        <div style="display:flex;gap:4px;align-items:center">
+          <button class="btn-edit admin-only" onclick="editPersonnel('${p.id}')" title="Modifier">✏️</button>
+          <button class="btn-del admin-only" onclick="del('personnel','${p.id}')">🗑</button>
+        </div>
+      </div>
+      ${p.tel?`<div class="card-row"><span class="card-label">📞 Téléphone</span><span class="card-value"><a href="tel:${p.tel}" style="color:var(--blue-primary);text-decoration:none">${p.tel}</a></span></div>`:''}
+      <div class="card-row"><span class="card-label">Carte jaune</span><span class="card-value" style="display:flex;align-items:center;gap:6px">${p.carteJaune?fmtDate(p.carteJaune):'Non renseignée'} ${cjBadge}</span></div>
+      <div class="card-row"><span class="card-label">AFGSU 2</span><span class="card-value" style="display:flex;align-items:center;gap:6px">${p.afgsu?fmtDate(p.afgsu):'Non renseignée'} ${afgBadge}</span></div>
+    </div>`;
+  }).join('');
+}
+
+function editPersonnel(id) {
+  const p = DB.get('personnel').find(x=>x.id===id);
+  if(!p) return;
+  document.getElementById('p-id').value = p.id;
+  document.getElementById('p-nom').value = p.nom;
+  document.getElementById('p-tel').value = p.tel||'';
+  document.getElementById('p-cj').value = p.carteJaune||'';
+  document.getElementById('p-afgsu').value = p.afgsu||'';
+  document.getElementById('p-modal-title').textContent = '✏️ Modifier — '+p.nom;
+  document.getElementById('p-save-btn').textContent = 'Enregistrer les modifications';
+  // Set role select
+  const sel = document.getElementById('p-role');
+  for(let i=0;i<sel.options.length;i++){
+    if(sel.options[i].value===p.role||sel.options[i].text===p.role){ sel.selectedIndex=i; break; }
+  }
+  document.getElementById('modal-personnel').classList.add('open');
+}
+
+function renderArsA(statusFilter, preArr) {
+  let arr = preArr || DB.get('arsA');
+  if(statusFilter&&statusFilter!=='tous') arr=arr.filter(a=>peremStatus(a.peremption).label===statusFilter);
+  const el = document.getElementById('list-arsA');
+  if(!arr.length){ el.innerHTML=emptyState('Aucun produit ARS Type A'); return; }
+  el.innerHTML = arr.map(a=>{
+    const s=peremStatus(a.peremption);
+    return `<div class="card">
+      <div class="card-header">
+        <div><div class="card-title">💊 ${a.nom}</div><div class="card-sub">Reçu le ${fmtDate(a.reception)}</div></div>
+        <div style="display:flex;gap:4px;align-items:center">
+          <span class="badge ${s.cls}">${s.label}</span>
+          <button class="btn-edit" onclick="editArsA('${a.id}')" title="Modifier">✏️</button>
+          <button class="btn-del admin-only" onclick="del('arsA','${a.id}')">🗑</button>
+        </div>
+      </div>
+      <div class="card-row"><span class="card-label">Quantité ARS</span><span class="card-value">${a.qty||0} unités</span></div>
+      <div class="card-row"><span class="card-label">Quantité stock</span><span class="card-value">${a.stock||0} unités</span></div>
+      <div class="card-row"><span class="card-label">Péremption</span><span class="card-value">${fmtDate(a.peremption)}</span></div>
+      ${a.comment?`<div class="card-row"><span class="card-label">Commentaire</span><span class="card-value">${a.comment}</span></div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function renderArsB(arr) {
+  if(!arr) arr = DB.get('arsB');
+  const el = document.getElementById('list-arsB');
+  if(!arr.length){ el.innerHTML=emptyState('Aucun produit ARS Type B'); return; }
+  el.innerHTML = arr.map(b=>{
+    const s=peremStatus(b.peremption);
+    const stockBas = (b.qArs+b.qAssu)<b.stockMin;
+    return `<div class="card">
+      <div class="card-header">
+        <div><div class="card-title">🏥 ${b.nom}</div></div>
+        <div style="display:flex;gap:4px;align-items:center">
+          ${stockBas?`<span class="badge badge-danger">Stock bas</span>`:''}
+          <span class="badge ${s.cls}">${s.label}</span>
+          <button class="btn-edit" onclick="editArsB('${b.id}')" title="Modifier">✏️</button>
+          <button class="btn-del admin-only" onclick="del('arsB','${b.id}')">🗑</button>
+        </div>
+      </div>
+      <div class="card-row"><span class="card-label">Qté ARS</span><span class="card-value">${b.qArs}</span></div>
+      <div class="card-row"><span class="card-label">Qté ASSU</span><span class="card-value">${b.qAssu}</span></div>
+      <div class="card-row"><span class="card-label">Qté stock</span><span class="card-value">${b.qStock||0}</span></div>
+      <div class="card-row"><span class="card-label">Stock min.</span><span class="card-value">${b.stockMin}</span></div>
+      <div class="card-row"><span class="card-label">Péremption</span><span class="card-value">${fmtDate(b.peremption)}</span></div>
+      ${b.alertDate?`<div class="card-row"><span class="card-label">Date alerte</span><span class="card-value">${fmtDate(b.alertDate)}</span></div>`:''}
+      ${b.comment?`<div class="card-row"><span class="card-label">Commentaire</span><span class="card-value">${b.comment}</span></div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function renderMissions(statusFilter) {
+  let arr = DB.get('missions').sort((a,b)=>b.date.localeCompare(a.date));
+  if(statusFilter&&statusFilter!=='tous') arr=arr.filter(m=>m.statut===statusFilter);
+  const el = document.getElementById('list-missions');
+  if(!arr.length){ el.innerHTML=emptyState('Aucune mission'); return; }
+  const typeIcon = {Urgence:'🚨',Transport:'🏥',Assistance:'🤝',Autre:'📌'};
+  el.innerHTML = arr.map(m=>{
+    const statBadge = m.statut==='Validé'?`<span class="badge badge-ok">Validé</span>`:`<span class="badge badge-warn">À valider</span>`;
+    return `<div class="card">
+      ${m.photo?`<img src="${m.photo}" style="width:100%;border-radius:var(--radius-sm);max-height:160px;object-fit:cover;margin-bottom:10px">`:''}
+      <div class="card-header">
+        <div><div class="card-title">${typeIcon[m.type]||'📋'} ${m.nom}</div><div class="card-sub">${m.type} — ${fmtDate(m.date)}</div></div>
+        <div style="display:flex;gap:6px;align-items:center">${statBadge}<button class="btn-del admin-only" onclick="del('missions','${m.id}')">🗑</button></div>
+      </div>
+      <div class="card-row"><span class="card-label">Véhicule</span><span class="card-value">${getVeh(m.vehiculeId).nom}</span></div>
+      <div class="card-row"><span class="card-label">Personnel</span><span class="card-value">${getPers(m.personnelId).nom}</span></div>
+      ${m.notes?`<div class="card-row"><span class="card-label">Notes</span><span class="card-value">${m.notes}</span></div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function renderDashboard() {
+  const vehs = DB.get('vehicules');
+  const pers = DB.get('personnel');
+  const maint = DB.get('maintenance');
+  const arsA = DB.get('arsA');
+  const arsB = DB.get('arsB');
+
+  const fuelLevels = JSON.parse(localStorage.getItem('gbs_fuellevels')||'{}');
+  const levels = [
+    {val:'plein', label:'Plein', short:'●●●●', pct:100, color:'#2E7D32', bold:false},
+    {val:'3/4',   label:'3/4',  short:'●●●○', pct:75,  color:'#2E7D32', bold:false},
+    {val:'1/2',   label:'1/2',  short:'●●○○', pct:50,  color:'#D32F2F', bold:true},
+    {val:'vide',  label:'Vide', short:'●○○○', pct:8,   color:'#D32F2F', bold:true}
+  ];
+
+  const fuelHtml = `
+    <div style="font-size:13px;font-weight:700;color:var(--gray-700);margin-bottom:8px">⛽ Niveaux carburant</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      ${vehs.map(v=>{
+        const cur = fuelLevels[v.id]||'plein';
+        const lv = levels.find(l=>l.val===cur)||levels[0];
+        const isLow = cur==='1/2'||cur==='vide';
+        const radios = levels.map(l=>`
+          <label style="display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;flex:1;padding:4px 2px;border-radius:4px;background:${cur===l.val?(isLow?'#FFEBEE':'#E8F5E9'):'transparent'}">
+            <input type="radio" name="fuel_${v.id}" value="${l.val}" ${cur===l.val?'checked':''} onchange="setFuelLevel('${v.id}',this.value)" style="accent-color:${l.color};width:16px;height:16px;margin:0">
+            <span style="font-size:10px;font-weight:${l.bold?'700':'500'};color:${l.color};line-height:1">${l.label}</span>
+          </label>`).join('');
+        return `<div style="background:var(--white);border:1px solid ${isLow?'var(--red)':'var(--gray-200)'};border-radius:var(--radius-md);padding:8px 10px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px">
+            <span style="font-size:12px;font-weight:700;color:var(--gray-900);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:80px">${v.nom}</span>
+            <span style="font-size:11px;font-weight:${lv.bold?'700':'600'};color:${lv.color};flex-shrink:0">${lv.label}</span>
+          </div>
+          <div style="height:6px;background:var(--gray-200);border-radius:3px;overflow:hidden;margin-bottom:6px">
+            <div style="height:100%;width:${lv.pct}%;background:${lv.color};border-radius:3px;transition:width 0.3s"></div>
+          </div>
+          <div style="display:flex;gap:2px">${radios}</div>
+        </div>`;
+      }).join('')}
+    </div>
+  `;
+
+  document.getElementById('dash-stats').innerHTML = `<div style="grid-column:1/-1">${fuelHtml}</div>`;
+
+  const alerts = [];
+
+  // Certifications
+  pers.forEach(p=>{
+    const dcj=daysUntil(p.carteJaune);
+    if(dcj<0) alerts.push({type:'danger',title:`Carte jaune expirée — ${p.nom}`,sub:`Expirée depuis ${Math.abs(dcj)} jours`});
+    else if(dcj<=90) alerts.push({type:'warn',title:`Carte jaune — ${p.nom}`,sub:`Expire dans ${dcj} jours`});
+    const dafg=daysUntil(p.afgsu);
+    if(dafg<0) alerts.push({type:'danger',title:`AFGSU 2 expirée — ${p.nom}`,sub:`Expirée depuis ${Math.abs(dafg)} jours`});
+    else if(dafg<=180) alerts.push({type:'warn',title:`AFGSU 2 — ${p.nom}`,sub:`Expire dans ${dafg} jours`});
+  });
+
+  // Contrôle technique véhicules (champ ctDate)
+  vehs.forEach(v=>{
+    if(!v.ctDate) return;
+    const d=daysUntil(v.ctDate);
+    if(d<0) alerts.push({type:'danger',title:`🔍 CT dépassé — ${v.nom}`,sub:`Dépassé de ${Math.abs(d)} jour${Math.abs(d)>1?'s':''}`});
+    else if(d<=30) alerts.push({type:'warn',title:`🔍 CT à venir — ${v.nom}`,sub:`Dans ${d} jour${d>1?'s':''} (${fmtDate(v.ctDate)})`});
+  });
+
+  // Maintenance CT (onglet maintenance)
+  maint.filter(m=>m.type==='Contrôle technique').forEach(m=>{
+    const d=daysUntil(m.nextDate);
+    if(d<=30) alerts.push({type: d<0?'danger':'warn',title:`CT maintenance — ${getVeh(m.vehiculeId).nom}`,sub: d<0?`Dépassé de ${Math.abs(d)} jours`:`Dans ${d} jours`});
+  });
+
+  // ARS périmés
+  arsA.forEach(a=>{ const s=peremStatus(a.peremption); if(s.label==='Périmé') alerts.push({type:'danger',title:`ARS-A périmé — ${a.nom}`,sub:'Retirer du stock'}); else if(s.label==='Bientôt périmé') alerts.push({type:'warn',title:`ARS-A — ${a.nom}`,sub:`Péremption le ${fmtDate(a.peremption)}`}); });
+  arsB.forEach(b=>{ const s=peremStatus(b.peremption); if(s.label==='Périmé') alerts.push({type:'danger',title:`ARS-B périmé — ${b.nom}`,sub:'Retirer du stock'}); });
+
+  // Entretiens / Désinfections
+  const entretiens = DB.get('entretiens');
+  entretiens.forEach(e=>{
+    if(e.alerte==='danger') alerts.push({type:'danger',title:`🧼 Entretien urgent — ${getVeh(e.vehiculeId).nom}`,sub:e.obs||'Alerte signalée'});
+    else if(e.alerte==='warn') alerts.push({type:'warn',title:`🧼 Entretien à surveiller — ${getVeh(e.vehiculeId).nom}`,sub:e.obs||'Point de vigilance'});
+  });
+
+  document.getElementById('alert-count').textContent = alerts.length+' alerte'+(alerts.length!==1?'s':'');
+
+  const el = document.getElementById('dash-alerts');
+  if(!alerts.length){ el.innerHTML=`<div class="alert" style="background:var(--green-light);border-left:3px solid var(--green)"><span class="alert-icon">✅</span><div><div class="alert-text">Aucune alerte active</div><div class="alert-sub">Tout est en ordre</div></div></div>`; return; }
+  el.innerHTML = alerts.map(a=>`<div class="alert alert-${a.type}">
+    <span class="alert-icon">${a.type==='danger'?'🔴':'🟡'}</span>
+    <div><div class="alert-text">${a.title}</div><div class="alert-sub">${a.sub}</div></div>
+  </div>`).join('');
+}
+
+function editArsA(id) {
+  const a = DB.get('arsA').find(x=>x.id===id);
+  if(!a) return;
+  document.getElementById('edit-arsA-id').value = id;
+  document.getElementById('edit-arsA-name').textContent = a.nom;
+  document.getElementById('edit-arsA-qty').value = a.qty||0;
+  document.getElementById('edit-arsA-stock').value = a.stock||0;
+  document.getElementById('edit-arsA-perem').value = a.peremption||'';
+  document.getElementById('edit-arsA-comment').value = a.comment||'';
+  document.getElementById('modal-edit-arsA').classList.add('open');
+}
+function saveEditArsA() {
+  const id = document.getElementById('edit-arsA-id').value;
+  const arr = DB.get('arsA');
+  const idx = arr.findIndex(x=>x.id===id);
+  if(idx>=0){
+    arr[idx].qty = parseInt(document.getElementById('edit-arsA-qty').value)||0;
+    arr[idx].stock = parseInt(document.getElementById('edit-arsA-stock').value)||0;
+    arr[idx].peremption = document.getElementById('edit-arsA-perem').value;
+    arr[idx].comment = document.getElementById('edit-arsA-comment').value;
+    DB.set('arsA',arr);
+  }
+  closeModal('modal-edit-arsA'); renderAll(); showToast('ARS-A mis à jour ✓');
+}
+function editArsB(id) {
+  const b = DB.get('arsB').find(x=>x.id===id);
+  if(!b) return;
+  document.getElementById('edit-arsB-id').value = id;
+  document.getElementById('edit-arsB-name').textContent = b.nom;
+  document.getElementById('edit-arsB-qars').value = b.qArs||0;
+  document.getElementById('edit-arsB-qassu').value = b.qAssu||0;
+  document.getElementById('edit-arsB-qstock').value = b.qStock||0;
+  document.getElementById('edit-arsB-perem').value = b.peremption||'';
+  document.getElementById('edit-arsB-comment').value = b.comment||'';
+  document.getElementById('modal-edit-arsB').classList.add('open');
+}
+function saveEditArsB() {
+  const id = document.getElementById('edit-arsB-id').value;
+  const arr = DB.get('arsB');
+  const idx = arr.findIndex(x=>x.id===id);
+  if(idx>=0){
+    arr[idx].qArs = parseInt(document.getElementById('edit-arsB-qars').value)||0;
+    arr[idx].qAssu = parseInt(document.getElementById('edit-arsB-qassu').value)||0;
+    arr[idx].qStock = parseInt(document.getElementById('edit-arsB-qstock').value)||0;
+    arr[idx].peremption = document.getElementById('edit-arsB-perem').value;
+    arr[idx].comment = document.getElementById('edit-arsB-comment').value;
+    DB.set('arsB',arr);
+  }
+  closeModal('modal-edit-arsB'); renderAll(); showToast('ARS-B mis à jour ✓');
+}
+
+function setFuelLevel(vehId, level) {
+  const levels = JSON.parse(localStorage.getItem('gbs_fuellevels')||'{}');
+  levels[vehId] = level;
+  localStorage.setItem('gbs_fuellevels', JSON.stringify(levels));
+  renderDashboard();
+}
+
+function emptyState(msg) {
+  return `<div class="empty"><div class="empty-icon">📭</div><div class="empty-text">${msg}</div></div>`;
+}
+
+// ===========================
+// FILTER HELPERS
+// ===========================
+function searchArsA(q) {
+  const arr = DB.get('arsA').filter(a => a.nom.toLowerCase().includes(q.toLowerCase()));
+  renderArsA(null, arr);
+}
+function searchArsB(q) {
+  const arr = DB.get('arsB').filter(b => b.nom.toLowerCase().includes(q.toLowerCase()));
+  renderArsB(arr);
+}
+function filterCarburant(f,btn) { setActiveTab(btn); renderCarburantList(f); }
+function filterMaint(f,btn) { setActiveTab(btn); renderMaintenanceList(f); }
+function filterArs(type,f,btn) { setActiveTab(btn); if(type==='A') renderArsA(f); }
+function filterMissions(f,btn) { setActiveTab(btn); renderMissions(f); }
+function filterEntretiens(f,btn) { setActiveTab(btn); renderEntretiensList(f); }
+function setActiveTab(btn) { btn.closest('.tabs').querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); btn.classList.add('active'); }
+
+function renderEntretiensList(filter) {
+  let arr = DB.get('entretiens').sort((a,b)=>b.date.localeCompare(a.date));
+  if(filter && filter!=='tous' && filter!=='alerte') arr=arr.filter(e=>e.type&&e.type.includes(filter));
+  if(filter==='alerte') arr=arr.filter(e=>e.alerte!=='none');
+  const el = document.getElementById('list-entretiens');
+  if(!arr.length){ el.innerHTML=emptyState('Aucun entretien enregistré'); return; }
+  el.innerHTML = arr.map(e=>{
+    let alerteBadge = '';
+    if(e.alerte==='warn') alerteBadge=`<span class="badge badge-warn">⚠️ À surveiller</span>`;
+    if(e.alerte==='danger') alerteBadge=`<span class="badge badge-danger">🔴 Urgent</span>`;
+    // Types sous forme de petits badges
+    const typesBadges = (e.type||'').split(', ').filter(Boolean).map(t=>
+      `<span style="display:inline-block;background:var(--blue-soft);color:var(--blue-primary);border-radius:20px;padding:2px 8px;font-size:11px;font-weight:600;margin:2px 2px 2px 0">${t}</span>`
+    ).join('');
+    // Responsables
+    const resp = [e.personnelId, e.personnelId2, e.personnelId3]
+      .filter(Boolean)
+      .map(id=>getPers(id).nom).filter(n=>n&&n!=='?').join(' · ');
+    const obsBlock = e.obs ? `<div style="margin-top:8px;background:${e.alerte==='danger'?'var(--red-light)':e.alerte==='warn'?'var(--yellow-light)':'var(--gray-100)'};border-radius:var(--radius-sm);padding:8px 10px;font-size:12px;color:var(--gray-700);border-left:3px solid ${e.alerte==='danger'?'var(--red)':e.alerte==='warn'?'var(--yellow)':'var(--gray-300)'}">
+      <div style="font-weight:600;font-size:11px;margin-bottom:3px;color:${e.alerte==='danger'?'var(--red)':e.alerte==='warn'?'var(--yellow)':'var(--gray-500)'}">OBSERVATIONS</div>
+      ${e.obs}
+    </div>` : '';
+    return `<div class="card">
+      <div class="card-header">
+        <div style="flex:1">
+          <div style="margin-bottom:4px">${typesBadges}</div>
+          <div class="card-sub">${getVeh(e.vehiculeId).nom||'—'}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+          <div style="display:flex;gap:4px;align-items:center">${alerteBadge}<button class="btn-del admin-only" onclick="del('entretiens','${e.id}')">🗑</button></div>
+        </div>
+      </div>
+      <div class="card-row"><span class="card-label">Date</span><span class="card-value">${fmtDate(e.date)}</span></div>
+      <div class="card-row"><span class="card-label">Responsable(s)</span><span class="card-value">${resp||'—'}</span></div>
+      ${e.produit?`<div class="card-row"><span class="card-label">Produit(s)</span><span class="card-value">${e.produit}</span></div>`:''}
+      ${obsBlock}
+    </div>`;
+  }).join('');
+}
+
+// Photo mission modal
+function previewMsPhoto(input) {
+  if(!input.files||!input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('ms-photo-img').src = e.target.result;
+    document.getElementById('ms-photo-preview').style.display='block';
+    document.getElementById('ms-photo-label').textContent='Photo sélectionnée ✓';
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+function clearMsPhoto() {
+  document.getElementById('ms-photo-img').src='';
+  document.getElementById('ms-photo-preview').style.display='none';
+  document.getElementById('ms-photo-label').textContent='Appuyer pour ajouter une photo';
+  document.getElementById('ms-photo-input').value='';
+}
+
+// Photo messagerie
+function previewMsgPhoto(input) {
+  if(!input.files||!input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('msg-photo-img').src = e.target.result;
+    document.getElementById('msg-photo-preview').style.display='block';
+    document.getElementById('msg-photo-label').textContent='Photo sélectionnée ✓';
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+function clearMsgPhoto() {
+  document.getElementById('msg-photo-img').src='';
+  document.getElementById('msg-photo-preview').style.display='none';
+  document.getElementById('msg-photo-label').textContent='Appuyer pour ajouter une photo';
+  document.getElementById('msg-photo-input').value='';
+}
+
+// Messagerie tabs
+function showMsgTab(tab, btn) {
+  setActiveTab(btn);
+  document.getElementById('msg-tab-contacts').style.display = tab==='contacts'?'block':'none';
+  document.getElementById('msg-tab-mesmessages').style.display = tab==='mesmessages'?'block':'none';
+  document.getElementById('msg-tab-envoyer').style.display = tab==='envoyer'?'block':'none';
+  if(tab==='envoyer') populateMsgSelects();
+  if(tab==='mesmessages') renderMesMessages();
+}
+
+function renderMesMessages() {
+  const msgs = DB.get('messages').sort((a,b)=>b.date.localeCompare(a.date));
+  const pers = DB.get('personnel');
+  const userName = (document.getElementById('dash-user').textContent||'').split(' —')[0].trim().toLowerCase();
+  const moi = pers.find(p=>p.nom.toLowerCase()===userName);
+  const el = document.getElementById('list-mes-messages');
+  if(!moi){ el.innerHTML=emptyState('Identifiant non trouvé dans le personnel'); return; }
+  const mesMsgs = msgs.filter(m=>m.destId===moi.id);
+  if(!mesMsgs.length){ el.innerHTML=emptyState('Aucun message reçu'); return; }
+  el.innerHTML = mesMsgs.map(m=>{
+    const mission = m.missionId ? DB.get('missions').find(x=>x.id===m.missionId) : null;
+    const d = new Date(m.date);
+    const dateStr = d.toLocaleDateString('fr-FR')+' '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+    const nonLuBadge = !m.lu ? `<span style="background:#D32F2F;color:white;border-radius:10px;padding:2px 7px;font-size:10px;font-weight:700">Nouveau</span>` : '';
+    return `<div class="card" style="margin-bottom:8px;border-left:3px solid ${!m.lu?'var(--red)':'var(--gray-300)'}">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <div style="font-size:13px;font-weight:600">📩 Mission reçue ${nonLuBadge}</div>
+        <div style="font-size:11px;color:var(--gray-400)">${dateStr}</div>
+      </div>
+      ${mission?`<div style="font-size:12px;color:var(--blue-primary);margin-bottom:4px">📋 ${mission.nom}</div>`:''}
+      <div style="font-size:14px;color:var(--gray-800);margin-bottom:6px">${m.texte}</div>
+      ${m.photo?`<img src="${m.photo}" style="width:100%;border-radius:var(--radius-sm);max-height:160px;object-fit:cover">`:''}
+    </div>`;
+  }).join('');
+}
+
+function populateMsgSelects() {
+  const pers = DB.get('personnel');
+  const missions = DB.get('missions');
+  const dest = document.getElementById('msg-dest');
+  const ms = document.getElementById('msg-mission');
+  if(dest) dest.innerHTML='<option value="">-- Choisir le destinataire --</option>'+pers.map(p=>`<option value="${p.id}">${p.nom} — ${p.role}${p.tel?' ('+p.tel+')':''}</option>`).join('');
+  if(ms) ms.innerHTML='<option value="">-- Lier une mission (optionnel) --</option>'+missions.map(m=>`<option value="${m.id}">${m.nom} — ${fmtDate(m.date)}</option>`).join('');
+}
+
+function envoyerMission() {
+  const destId = document.getElementById('msg-dest').value;
+  const texte = document.getElementById('msg-texte').value.trim();
+  if(!destId) return showToast('Choisir un destinataire');
+  if(!texte) return showToast('Message vide');
+  const photoData = document.getElementById('msg-photo-preview').style.display!=='none' ? document.getElementById('msg-photo-img').src : '';
+  const missionId = document.getElementById('msg-mission').value;
+  const arr = DB.get('messages');
+  arr.push({id:DB.id(),destId,missionId,texte,photo:photoData,date:new Date().toISOString(),lu:false});
+  DB.set('messages',arr);
+  document.getElementById('msg-texte').value='';
+  clearMsgPhoto();
+  updateMsgBadge();
+  renderMessagesEnvoyes();
+  showToast('Mission envoyée ✓');
+}
+
+function updateMsgBadge() {
+  const msgs = DB.get('messages');
+  const pers = DB.get('personnel');
+  // Trouver le personnel correspondant au nom connecté
+  const userName = (document.getElementById('dash-user').textContent||'').split(' —')[0].trim().toLowerCase();
+  const moi = pers.find(p => p.nom.toLowerCase() === userName);
+  const nonLus = moi ? msgs.filter(m => m.destId === moi.id && !m.lu).length : 0;
+  const badge = document.getElementById('msg-badge');
+  if(!badge) return;
+  if(nonLus > 0) {
+    badge.style.display = 'block';
+    badge.textContent = nonLus > 9 ? '9+' : nonLus;
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+function marquerMsgsLus() {
+  const msgs = DB.get('messages');
+  const pers = DB.get('personnel');
+  const userName = (document.getElementById('dash-user').textContent||'').split(' —')[0].trim().toLowerCase();
+  const moi = pers.find(p => p.nom.toLowerCase() === userName);
+  if(!moi) return;
+  let changed = false;
+  msgs.forEach(m => { if(m.destId === moi.id && !m.lu){ m.lu = true; changed = true; } });
+  if(changed) { DB.set('messages', msgs); updateMsgBadge(); }
+}
+
+// Polling toutes les 30 secondes pour détecter nouveaux messages
+async function pollMessages() {
+  try {
+    const data = await supaFetch(TABLES['messages']+'?order=id');
+    CACHE['messages'] = Array.isArray(data) ? data : [];
+    updateMsgBadge();
+  } catch(e) {}
+}
+setInterval(pollMessages, 30000);
+
+function renderContactsMsg() {
+  const pers = DB.get('personnel');
+  const msgs = DB.get('messages');
+  const el = document.getElementById('list-contacts-msg');
+  if(!pers.length){ el.innerHTML=emptyState('Aucun personnel enregistré'); return; }
+  el.innerHTML = pers.map(p=>{
+    const initiales = p.nom.split(' ').map(x=>x[0]).join('').toUpperCase().substr(0,2);
+    const nbMsg = msgs.filter(m=>m.destId===p.id).length;
+    return `<div class="card" style="display:flex;align-items:center;gap:14px;padding:14px 16px">
+      <div style="width:46px;height:46px;border-radius:50%;background:var(--blue-soft);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:var(--blue-primary);flex-shrink:0">${initiales}</div>
+      <div style="flex:1">
+        <div style="font-weight:700;font-size:15px">${p.nom}</div>
+        <div style="font-size:12px;color:var(--gray-500)">${p.role}${p.tel?' · '+p.tel:''}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+        ${p.tel?`<a href="tel:${p.tel}" style="background:var(--blue-primary);color:white;border-radius:var(--radius-sm);padding:6px 12px;font-size:12px;font-weight:600;text-decoration:none">📞 Appeler</a>`:''}
+        <span style="font-size:11px;color:var(--gray-400)">${nbMsg} msg envoyé${nbMsg>1?'s':''}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderMessagesEnvoyes() {
+  const msgs = DB.get('messages').sort((a,b)=>b.date.localeCompare(a.date));
+  const el = document.getElementById('list-messages-envoyes');
+  if(!msgs.length){ el.innerHTML=''; return; }
+  el.innerHTML = `<div style="font-size:13px;font-weight:600;color:var(--gray-600);margin:14px 0 8px">Historique des envois</div>`+msgs.map(m=>{
+    const dest = getPers(m.destId);
+    const mission = m.missionId ? DB.get('missions').find(x=>x.id===m.missionId) : null;
+    const d = new Date(m.date);
+    const dateStr = d.toLocaleDateString('fr-FR')+' '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+    return `<div class="card" style="margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+        <div style="font-size:13px;font-weight:600">→ ${dest.nom}</div>
+        <div style="font-size:11px;color:var(--gray-400)">${dateStr}</div>
+      </div>
+      ${mission?`<div style="font-size:12px;color:var(--blue-primary);margin-bottom:4px">📋 ${mission.nom}</div>`:''}
+      <div style="font-size:13px;color:var(--gray-700);margin-bottom:6px">${m.texte}</div>
+      ${m.photo?`<img src="${m.photo}" style="width:100%;border-radius:var(--radius-sm);max-height:120px;object-fit:cover">`:''}
+    </div>`;
+  }).join('');
+}
+
+// ===========================
+// INIT
+// ===========================
+function renderAll() {
+  renderDashboard();
+  renderVehiculeList(DB.get('vehicules'));
+  renderCarburantList();
+  renderMaintenanceList();
+  renderPersonnelList();
+  renderArsA();
+  renderArsB();
+  renderMissions();
+  renderContactsMsg();
+  renderMessagesEnvoyes();
+  renderEntretiensList();
+  applyRoleUI();
+  updateMsgBadge();
+}
+
+function showPage(name, btn) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  if(btn) btn.classList.add('active');
+  if(['carburant','maintenance','missions','entretiens'].includes(name)) populateSelects();
+  if(name==='messagerie') {
+    marquerMsgsLus();
+    renderContactsMsg();
+    renderMessagesEnvoyes();
+  }
+}
+
+async function init() {
+  const now = new Date();
+  document.getElementById('header-date').textContent = now.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
+
+  // Show loading overlay
+  const overlay = document.createElement('div');
+  overlay.id = 'loading-overlay';
+  overlay.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;gap:16px;background:var(--blue-primary)">
+    <div style="font-size:28px;font-weight:800;color:white;letter-spacing:1px">GesBUSSIERE</div>
+    <div style="width:48px;height:48px;border:4px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.8s linear infinite"></div>
+    <div style="color:rgba(255,255,255,0.8);font-size:14px">Connexion au cloud...</div>
+  </div>
+  <style>@keyframes spin{to{transform:rotate(360deg)}}</style>`;
+  document.body.appendChild(overlay);
+
+  try {
+    await loadAllFromCloud();
+    await seedData();
+  } catch(e) {
+    overlay.querySelector('div > div:last-child').textContent = '⚠️ Erreur de connexion — vérifiez votre réseau';
+    console.error(e);
+    setTimeout(()=>overlay.remove(), 3000);
+    return;
+  }
+  overlay.remove();
+}
+
+init();
+</script>
+</body>
+</html>
